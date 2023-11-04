@@ -1,0 +1,92 @@
+<template>
+    <el-header id="header">
+        <div class="header-content">
+            <template v-if="isLoggedIn">
+                <el-menu class="menu" mode="horizontal" :ellipsis="false" background-color="#fff" menu-trigger="click">
+                    <MenuHeader :role="role" />
+
+                    <div class="flex-grow"></div>
+                    <el-menu-item class="no-hover">
+                        <el-dropdown>
+                            <span class="name-user">
+                                <el-avatar src="" />
+                                <span class="avatar">{{ role }} - Le Nghia</span>
+                            </span>
+
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item>
+                                        <router-link to="/ho-so">Hồ sơ cá nhân</router-link>
+                                    </el-dropdown-item>
+                                    <el-dropdown-item>
+                                        <router-link to="/cai-dat">Cài đặt</router-link>
+                                    </el-dropdown-item>
+                                    <el-dropdown-item>
+                                        <el-button link>Đăng xuất</el-button>
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </el-menu-item>
+                </el-menu>
+            </template>
+
+            <template v-else>
+                <el-menu class="menu" mode="horizontal" :ellipsis="false" background-color="#fff" menu-trigger="click">
+                    <el-menu-item> Magic Post </el-menu-item>
+                    <el-menu-item> Trang chủ </el-menu-item>
+                    <el-menu-item> Về chúng tôi </el-menu-item>
+                    <div class="flex-grow"></div>
+                    <el-menu-item class="no-hover">
+                        <el-button type="primary" plain>Đăng ký</el-button>
+                    </el-menu-item>
+                    <el-menu-item class="no-hover">
+                        <el-button type="primary"> Đăng nhập </el-button>
+                    </el-menu-item>
+                </el-menu>
+            </template>
+        </div>
+    </el-header>
+</template>
+
+<script setup lang="ts">
+import MenuHeader from '@/components/menu/MenuHeader.vue';
+
+const roleArr = [
+    'admin',
+    'customer',
+    'transaction_point_manager',
+    'gathering_point_manager',
+    'transaction_point_staff',
+    'gathering_point_staff',
+];
+const role = roleArr[0];
+
+const isLoggedIn = true;
+</script>
+
+<style scoped>
+#header {
+    position: fixed;
+    width: 100%;
+    z-index: 12;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.menu .no-hover:hover {
+    color: inherit !important;
+    background-color: transparent !important;
+}
+
+.name-user {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    margin-left: 8px;
+}
+</style>
