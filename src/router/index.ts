@@ -136,6 +136,21 @@ const router = createRouter({
                     name: 'about',
                     component: () => import('@/views/AboutView.vue'),
                 },
+
+                //profile page
+                {
+                    path: 'profile',
+                    name: 'profile',
+                    component: () => import('@/views/ProfileView.vue'),
+                },
+
+                //settings page
+
+                {
+                    path: 'settings',
+                    name: 'setting',
+                    component: () => import('@/views/SettingView.vue'),
+                },
             ],
         },
     ],

@@ -16,10 +16,10 @@
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item>
-                                        <router-link to="/ho-so">Hồ sơ cá nhân</router-link>
+                                        <router-link to="/profile">Hồ sơ cá nhân</router-link>
                                     </el-dropdown-item>
                                     <el-dropdown-item>
-                                        <router-link to="/cai-dat">Cài đặt</router-link>
+                                        <router-link to="/settings">Cài đặt</router-link>
                                     </el-dropdown-item>
                                     <el-dropdown-item>
                                         <el-button link>Đăng xuất</el-button>

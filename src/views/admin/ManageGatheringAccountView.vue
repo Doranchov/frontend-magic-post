@@ -1,4 +1,7 @@
 <template>
+    <div class="title-page">
+        <h1>Tài Khoản Trưởng Điểm Tập Kết</h1>
+    </div>
     <el-table :data="tableData" class="table">
         <el-table-column label="STT" prop="stt" width="60"></el-table-column>
         <el-table-column label="Họ tên" prop="username"></el-table-column>
@@ -8,7 +11,7 @@
         <el-table-column label="Nơi làm việc" prop="gathering"></el-table-column>
         <el-table-column fixed="right" label="Hành động" width="150">
             <template #default>
-                <el-button type="primary" size="small" plain>Sửa</el-button>
+                <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal()">Sửa</el-button>
                 <el-button type="danger" size="small" @click="visible = true" plain>Xóa</el-button>
             </template>
         </el-table-column>
@@ -25,7 +28,7 @@
     </el-dialog>
 
     <div class="btn-add">
-        <el-button type="primary" circle size="large" class="btn">
+        <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="" class="icon">
                 <path
                     fill="currentColor"
@@ -34,10 +37,15 @@
             </svg>
         </el-button>
     </div>
+
+    <CreateAccountModal ref="createAccountRef" />
+    <UpdateAccountModal ref="updateAccountRef" />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import CreateAccountModal from '@/components/modals/admin/CreateAccountModal.vue';
+import UpdateAccountModal from '@/components/modals/admin/UpdateAccountModal.vue';
 
 const tableData = ref<any[]>([
     {
@@ -67,9 +75,16 @@ const tableData = ref<any[]>([
 ]);
 
 const visible = ref<boolean>(false);
+
+const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
+const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
 </script>
 
 <style scoped>
+.title-page {
+    text-align: center;
+    margin-bottom: 28px;
+}
 .icon {
     width: 25px;
 }
