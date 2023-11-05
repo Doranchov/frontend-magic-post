@@ -24,7 +24,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="Địa điểm làm việc">
-                <el-select v-model="address" class="m-2" placeholder="Các chức vụ">
+                <el-select v-model="address" class="m-2" placeholder="Địa điểm">
                     <el-option
                         v-for="(item, index) in addressOptions"
                         :key="index"

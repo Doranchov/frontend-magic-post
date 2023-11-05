@@ -52,6 +52,11 @@
                                 <el-form-item label="Vai trò:" prop="role">
                                     <el-input v-model="role" disabled="true" />
                                 </el-form-item>
+                                <template v-if="!isCustomer()">
+                                    <el-form-item label="Nơi làm việc:">
+                                        <el-input v-model="location" disabled="true" />
+                                    </el-form-item>
+                                </template>
                                 <el-form-item label="Số điện thoại:" prop="phone">
                                     <el-input v-model="phone" type="text" />
                                 </el-form-item>
@@ -71,7 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import type { User } from '@/interfaces/index';
 
@@ -79,52 +84,14 @@ const imageUrl: string | undefined = 'https://avatars.githubusercontent.com/u/10
 
 const userInfoForm = ref<User | null>(null);
 
-const username = computed({
-    get() {
-        return userInfoForm.value?.username || '';
-    },
-    set(username) {
-        if (typeof userInfoForm.value?.username === 'string') {
-            userInfoForm.value = { ...userInfoForm.value, username };
-        }
-    },
-});
-
-const email = computed({
-    get() {
-        return userInfoForm.value?.email || '';
-    },
-    set(email) {
-        if (typeof userInfoForm.value?.email === 'string') {
-            userInfoForm.value = { ...userInfoForm.value, email };
-        }
-    },
-});
-
-const phone = computed({
-    get() {
-        return userInfoForm.value?.phone || '';
-    },
-    set(phone) {
-        if (typeof userInfoForm.value?.phone === 'string') {
-            userInfoForm.value = { ...userInfoForm.value, phone };
-        }
-    },
-});
-
-const address = computed({
-    get() {
-        return userInfoForm.value?.address || '';
-    },
-    set(address) {
-        if (typeof userInfoForm.value?.address === 'string') {
-            userInfoForm.value = { ...userInfoForm.value, address };
-        }
-    },
-});
-
+const username = ref<string>('');
+const email = ref<string>('');
+const phone = ref<string>('');
+const address = ref<string>('');
+const location = ref<string>('Hà Nội');
 const avatar = ref<any | null>();
 const avatarInput = ref<HTMLInputElement | null>(null);
+
 const roleArr = [
     'admin',
     'customer',
@@ -133,7 +100,15 @@ const roleArr = [
     'transaction_point_staff',
     'gathering_point_staff',
 ];
-const role: string = roleArr[0];
+const role: string = roleArr[5];
+
+const isCustomer = () => {
+    if (role === 'customer') {
+        return true;
+    } else {
+        return false;
+    }
+};
 
 const handleChangeAvatar = () => {
     if (avatarInput.value?.files && avatarInput.value.files[0]) {

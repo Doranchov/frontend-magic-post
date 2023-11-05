@@ -6,4 +6,12 @@ export interface User {
     role: string;
     address: string;
     phone: string;
+    avatar: string;
+}
+
+export interface Role {
+    _id: string;
+    slug: string;
+    description: string;
+    accounts: any[];
 }

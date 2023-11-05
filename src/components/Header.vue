@@ -60,7 +60,7 @@ const roleArr = [
     'transaction_point_staff',
     'gathering_point_staff',
 ];
-const role = roleArr[0];
+const role = roleArr[5];
 
 const isLoggedIn = true;
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="visible" title="Chỉnh sửa thông tin tài khoản" width="40%" top="8vh">
+    <el-dialog v-model="visible" title="Tạo tài khoản cho trưởng điểm" width="40%" top="8vh">
         <el-form :model="postForm" label-position="top">
             <el-form-item label="Họ tên">
                 <el-input v-model="username" type="text" />
@@ -14,24 +14,10 @@
                 <el-input v-model="phone" type="text" />
             </el-form-item>
             <el-form-item label="Chức vụ">
-                <el-select v-model="role" class="m-2" placeholder="Các chức vụ">
-                    <el-option
-                        v-for="(item, index) in roleOptions"
-                        :key="index"
-                        :label="item.label"
-                        :value="item.value"
-                    />
-                </el-select>
+                <el-input v-model="role" type="text" disabled placeholder="Nhân viên điểm tập kết" />
             </el-form-item>
             <el-form-item label="Địa điểm làm việc">
-                <el-select v-model="address" class="m-2" placeholder="Địa điểm">
-                    <el-option
-                        v-for="(item, index) in addressOptions"
-                        :key="index"
-                        :label="item.label"
-                        :value="item.value"
-                    />
-                </el-select>
+                <el-input v-model="address" type="text" disabled placeholder="Hà Nội" />
             </el-form-item>
         </el-form>
         <template #footer>
@@ -49,35 +35,6 @@ import type { User } from '@/interfaces/index';
 
 const visible = ref<boolean>(false);
 const postForm = ref<User>();
-const roleOptions = [
-    {
-        label: 'Trưởng điểm tập kết',
-        value: '1',
-    },
-    {
-        label: 'Trưởng điểm giao dịch',
-        value: '2',
-    },
-];
-
-const addressOptions = [
-    {
-        label: 'Hà Nội',
-        value: 'Hà Nội',
-    },
-    {
-        label: 'Hải Dương',
-        value: 'Hải Dương',
-    },
-    {
-        label: 'Hưng Yên',
-        value: 'Hưng Yên',
-    },
-    {
-        label: 'Quảng Ninh',
-        value: 'Quảng Ninh',
-    },
-];
 
 const username = ref<string>('');
 const email = ref<string>('');

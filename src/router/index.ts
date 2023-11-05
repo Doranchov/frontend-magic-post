@@ -107,7 +107,7 @@ const router = createRouter({
                         {
                             path: 'create-package',
                             name: 'staff-gathering-package',
-                            component: () => import('@/views/staff/gathering/CreateGoodsView.vue'),
+                            component: () => import('@/views/staff/gathering/CreateOrderView.vue'),
                         },
                     ],
                 },
@@ -124,7 +124,7 @@ const router = createRouter({
                         {
                             path: 'create-package',
                             name: 'staff-transaction-package',
-                            component: () => import('@/views/staff/transaction/CreateGoodsView.vue'),
+                            component: () => import('@/views/staff/transaction/CreateOrderView.vue'),
                         },
                     ],
                 },

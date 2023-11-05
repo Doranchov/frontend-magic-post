@@ -30,17 +30,23 @@
     </template>
 
     <template v-else-if="props.role === 'transaction_point_manager'">
-        <el-menu-item index="1"> Magic Post </el-menu-item>
-        <el-menu-item index="2"> Trang chủ </el-menu-item>
-        <el-menu-item index="3"> Quản lý tài khoản </el-menu-item>
-        <el-menu-item index="4"> Quản lý hàng hóa</el-menu-item>
+        <el-menu-item index="1"> <router-link to="/">Magic Post</router-link> </el-menu-item>
+        <el-menu-item index="2"> <router-link to="/">Trang chủ </router-link></el-menu-item>
+        <el-menu-item index="3">
+            <router-link to="/manage/transaction/account">Quản lý tài khoản</router-link>
+        </el-menu-item>
+        <el-menu-item index="4">
+            <router-link to="/manage/transaction/goods">Quản lý hàng hóa</router-link></el-menu-item
+        >
     </template>
 
     <template v-else-if="props.role === 'gathering_point_manager'">
-        <el-menu-item index="1"> Magic Post </el-menu-item>
-        <el-menu-item index="2"> Trang chủ </el-menu-item>
-        <el-menu-item index="3"> Quản lý tài khoản </el-menu-item>
-        <el-menu-item index="4"> Quản lý hàng hóa</el-menu-item>
+        <el-menu-item index="1"> <router-link to="/">Magic Post</router-link> </el-menu-item>
+        <el-menu-item index="2"> <router-link to="/">Trang chủ </router-link></el-menu-item>
+        <el-menu-item index="3">
+            <router-link to="/manage/gathering/account">Quản lý tài khoản</router-link>
+        </el-menu-item>
+        <el-menu-item index="4"> <router-link to="/manage/gathering/goods">Quản lý hàng hóa</router-link></el-menu-item>
     </template>
 
     <template v-else-if="props.role === 'transaction_point_staff'">
@@ -51,10 +57,14 @@
     </template>
 
     <template v-else-if="props.role === 'gathering_point_staff'">
-        <el-menu-item index="1"> Magic Post </el-menu-item>
-        <el-menu-item index="2"> Trang chủ </el-menu-item>
-        <el-menu-item index="3"> Tạo đơn hàng </el-menu-item>
-        <el-menu-item index="4"> Xác nhận đơn hàng </el-menu-item>
+        <el-menu-item index="1"> <router-link to="/">Magic Post</router-link> </el-menu-item>
+        <el-menu-item index="2"> <router-link to="/">Trang chủ </router-link></el-menu-item>
+        <el-menu-item index="3">
+            <router-link to="/staff/gathering/create-package">Tạo đơn hàng</router-link>
+        </el-menu-item>
+        <el-menu-item index="4">
+            <router-link to="/staff/gathering/goods"> Xác nhận đơn hàng</router-link>
+        </el-menu-item>
     </template>
 </template>
 
