@@ -151,6 +151,21 @@ const router = createRouter({
                     name: 'setting',
                     component: () => import('@/views/SettingView.vue'),
                 },
+
+                // register page
+
+                {
+                    path: 'register',
+                    name: 'register',
+                    component: () => import('@/views/RegisterView.vue'),
+                },
+
+                // login page
+                {
+                    path: 'login',
+                    name: 'login',
+                    component: () => import('@/views/LoginView.vue'),
+                },
             ],
         },
     ],

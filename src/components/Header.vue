@@ -38,10 +38,10 @@
                     <el-menu-item> Về chúng tôi </el-menu-item>
                     <div class="flex-grow"></div>
                     <el-menu-item class="no-hover">
-                        <el-button type="primary" plain>Đăng ký</el-button>
+                        <el-button type="primary" plain @click="changeRegisterPage">Đăng ký</el-button>
                     </el-menu-item>
                     <el-menu-item class="no-hover">
-                        <el-button type="primary"> Đăng nhập </el-button>
+                        <el-button type="primary" @click="changeLoginPage"> Đăng nhập </el-button>
                     </el-menu-item>
                 </el-menu>
             </template>
@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import MenuHeader from '@/components/menu/MenuHeader.vue';
+import router from '@/router';
 
 const roleArr = [
     'admin',
@@ -62,7 +63,15 @@ const roleArr = [
 ];
 const role = roleArr[5];
 
-const isLoggedIn = true;
+const isLoggedIn = false;
+
+const changeRegisterPage = () => {
+    router.push({ name: 'register' });
+};
+
+const changeLoginPage = () => {
+    router.push({ name: 'login' });
+};
 </script>
 
 <style scoped>
