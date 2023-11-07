@@ -53,6 +53,9 @@ import { reactive, ref } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import router from '@/router/index';
 import { ElForm } from 'element-plus';
+import useAuthStore from '@/stores/useAuthStore';
+
+const authStore = useAuthStore();
 
 const loginForm = reactive({
     email: '',
@@ -66,7 +69,7 @@ const submitForm = (formEl: typeof ElForm | null) => {
     formEl.validate((valid: any) => {
         loadingFullScreen();
         if (valid) {
-            // authStore.login(loginForm);
+            authStore.login(loginForm);
             router.push({ name: 'home' });
         } else {
             return false;
