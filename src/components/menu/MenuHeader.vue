@@ -23,9 +23,11 @@
     </template>
 
     <template v-else-if="props.role === 'customer'">
-        <el-menu-item index="1"> Magic Post </el-menu-item>
-        <el-menu-item index="2"> Trang chủ </el-menu-item>
-        <el-menu-item index="3"> Về chúng tôi </el-menu-item>
+        <el-menu-item index="1"> <router-link to="/">Magic Post</router-link> </el-menu-item>
+        <el-menu-item index="2"> <router-link to="/">Trang chủ </router-link></el-menu-item>
+        <el-menu-item index="3">
+            <router-link to="/about"> Về chúng tôi </router-link>
+        </el-menu-item>
         <el-menu-item index="4"> Tra cứu đơn hàng </el-menu-item>
     </template>
 
@@ -50,10 +52,18 @@
     </template>
 
     <template v-else-if="props.role === 'transaction_point_staff'">
-        <el-menu-item index="1"> Magic Post </el-menu-item>
-        <el-menu-item index="2"> Trang chủ </el-menu-item>
-        <el-menu-item index="3"> Tạo đơn hàng </el-menu-item>
-        <el-menu-item index="4"> Thống kê đơn hàng </el-menu-item>
+        <el-menu-item index="1">
+            <router-link to="/"> Magic Post </router-link>
+        </el-menu-item>
+        <el-menu-item index="2">
+            <router-link to="/"> Trang chủ </router-link>
+        </el-menu-item>
+        <el-menu-item index="3">
+            <router-link to="/staff/transaction/create-package"> Tạo đơn hàng </router-link>
+        </el-menu-item>
+        <el-menu-item index="4">
+            <router-link to="/staff/transaction/goods"> Xác nhận đơn hàng</router-link>
+        </el-menu-item>
     </template>
 
     <template v-else-if="props.role === 'gathering_point_staff'">
