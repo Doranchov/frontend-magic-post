@@ -1,6 +1,6 @@
 <template>
     <el-footer id="footer">
-        <div class="footer-content">Copyright © 2023</div>
+        <div class="footer-content">Footer dau buoi</div>
     </el-footer>
 </template>
 
