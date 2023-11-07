@@ -22,7 +22,7 @@
                                         <router-link to="/settings">Cài đặt</router-link>
                                     </el-dropdown-item>
                                     <el-dropdown-item>
-                                        <el-button link>Đăng xuất</el-button>
+                                        <span @click="() => handleLogout(user)">Đăng xuất</span>
                                     </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
@@ -52,6 +52,15 @@
 <script setup lang="ts">
 import MenuHeader from '@/components/menu/MenuHeader.vue';
 import router from '@/router';
+import useAuthStore from '@/stores/useAuthStore';
+import { computed } from 'vue';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import { createAxiosJwt } from '@/utils/createInstance';
+
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLoggedIn);
+const user = computed(() => authStore.userInfo);
+const httpJwt = createAxiosJwt(authStore.userInfo);
 
 const roleArr = [
     'admin',
@@ -63,7 +72,13 @@ const roleArr = [
 ];
 const role = roleArr[5];
 
-const isLoggedIn = false;
+const handleLogout = (user: any) => {
+    if (user !== null) {
+        loadingFullScreen();
+        authStore.logout(user, httpJwt);
+        router.push({ name: 'login' });
+    }
+};
 
 const changeRegisterPage = () => {
     router.push({ name: 'register' });

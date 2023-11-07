@@ -1,4 +1,4 @@
-export interface User {
+export interface Account {
     _id: string;
     username: string;
     email: string;
@@ -7,11 +7,20 @@ export interface User {
     address: string;
     phone: string;
     avatar: string;
+    refreshToken: string;
+    accessToken: string;
 }
 
 export interface Role {
     _id: string;
-    slug: string;
+    code: string;
     description: string;
     accounts: any[];
+}
+
+export interface Token {
+    _id: string;
+    admin: boolean;
+    iat: number;
+    exp: number;
 }
