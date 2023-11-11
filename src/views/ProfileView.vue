@@ -61,7 +61,24 @@
                                     <el-input v-model="phone" type="text" />
                                 </el-form-item>
                                 <el-form-item label="Địa chỉ:" prop="address">
-                                    <el-input v-model="address" type="text" />
+                                    <div class="address-option">
+                                        <el-select
+                                            placeholder="Chọn tỉnh/thành phố"
+                                            v-model="province"
+                                            remote
+                                            :remote-method="loadProvinces"
+                                        >
+                                            <el-option
+                                                v-for="(item, index) in provinceOptions"
+                                                :key="index"
+                                                :label="item.name"
+                                                :value="item._id"
+                                            />
+                                        </el-select>
+                                        <el-select placeholder="Chọn quận/huyện">
+                                            <el-option />
+                                        </el-select>
+                                    </div>
                                 </el-form-item>
                                 <el-form-item>
                                     <el-button type="primary" @click="handleSubmit">Lưu lại</el-button>
@@ -76,18 +93,26 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
-import type { User } from '@/interfaces/index';
+import type { Account } from '@/interfaces/index';
+import { RoleServices } from '@/services/role/RoleServices';
+import useAuthStore from '@/stores/useAuthStore';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
 
-const imageUrl: string | undefined = 'https://avatars.githubusercontent.com/u/100254753?v=4';
+const authStore = useAuthStore();
 
-const userInfoForm = ref<User | null>(null);
+const user = computed(() => authStore.userInfo);
 
-const username = ref<string>('');
-const email = ref<string>('');
-const phone = ref<string>('');
+const userInfoForm = ref<Account | null>(null);
+
+const imageUrl: string = user.value.avatar;
+const username = ref<string>(user.value.username);
+const email = ref<string>(user.value.email);
+const phone = ref<string>(user.value.phone);
 const address = ref<string>('');
+const province = ref<string>('');
+const provinceOptions = ref<any[]>([]);
 const location = ref<string>('Hà Nội');
 const avatar = ref<any | null>();
 const avatarInput = ref<HTMLInputElement | null>(null);
@@ -100,10 +125,10 @@ const roleArr = [
     'transaction_point_staff',
     'gathering_point_staff',
 ];
-const role: string = roleArr[5];
+const role = ref<string>('');
 
 const isCustomer = () => {
-    if (role === 'customer') {
+    if (role.value === 'Khách hàng') {
         return true;
     } else {
         return false;
@@ -114,6 +139,12 @@ const handleChangeAvatar = () => {
     if (avatarInput.value?.files && avatarInput.value.files[0]) {
         avatar.value = avatarInput.value.files[0];
     }
+};
+
+const loadProvinces = async () => {
+    const res = await ProvinceServices.getAll();
+    console.log(res);
+    provinceOptions.value = res;
 };
 
 const handleSubmit = async () => {
@@ -140,6 +171,12 @@ const handleSubmit = async () => {
     //     ElMessage.error('Sửa thất bại.');
     // }
 };
+
+onMounted(async () => {
+    role.value = (await RoleServices.getRoleById(user.value.role)).description;
+    provinceOptions.value = await ProvinceServices.getAll();
+    userInfoForm.value = user.value;
+});
 </script>
 
 <style scoped>
@@ -170,5 +207,14 @@ h1 {
     cursor: pointer;
     border-radius: 50%;
     opacity: 0;
+}
+
+.address-option {
+    display: flex;
+    justify-content: space-between;
+}
+
+.el-select + .el-select {
+    margin-left: 20px;
 }
 </style>

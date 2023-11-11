@@ -45,10 +45,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { User } from '@/interfaces/index';
+import type { Account } from '@/interfaces/index';
 
 const visible = ref<boolean>(false);
-const postForm = ref<User>();
+const postForm = ref<Account>();
 const roleOptions = [
     {
         label: 'Trưởng điểm tập kết',

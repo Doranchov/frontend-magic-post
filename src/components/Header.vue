@@ -3,14 +3,14 @@
         <div class="header-content">
             <template v-if="isLoggedIn">
                 <el-menu class="menu" mode="horizontal" :ellipsis="false" background-color="#fff" menu-trigger="click">
-                    <MenuHeader :role="role" />
+                    <MenuHeader :role="user.role" />
 
                     <div class="flex-grow"></div>
                     <el-menu-item class="no-hover">
                         <el-dropdown>
                             <span class="name-user">
                                 <el-avatar src="" />
-                                <span class="avatar">{{ role }} - Le Nghia</span>
+                                <span class="avatar">{{ user.username }}</span>
                             </span>
 
                             <template #dropdown>
@@ -60,20 +60,10 @@ import { createAxiosJwt } from '@/utils/createInstance';
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
 const user = computed(() => authStore.userInfo);
-const httpJwt = createAxiosJwt(authStore.userInfo);
-
-const roleArr = [
-    'admin',
-    'customer',
-    'transaction_point_manager',
-    'gathering_point_manager',
-    'transaction_point_staff',
-    'gathering_point_staff',
-];
-const role = roleArr[5];
 
 const handleLogout = (user: any) => {
     if (user !== null) {
+        const httpJwt = createAxiosJwt(user);
         loadingFullScreen();
         authStore.logout(user, httpJwt);
         router.push({ name: 'login' });
