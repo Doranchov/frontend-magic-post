@@ -9,7 +9,7 @@
                     <el-menu-item class="no-hover">
                         <el-dropdown>
                             <span class="name-user">
-                                <el-avatar src="" />
+                                <el-avatar :src="user.avatar" />
                                 <span class="avatar">{{ user.username }}</span>
                             </span>
 

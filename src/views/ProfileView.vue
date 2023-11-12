@@ -67,6 +67,8 @@
                                             v-model="province"
                                             remote
                                             :remote-method="loadProvinces"
+                                            @change="handleChooseProvince"
+                                            default-first-option="true"
                                         >
                                             <el-option
                                                 v-for="(item, index) in provinceOptions"
@@ -75,8 +77,19 @@
                                                 :value="item._id"
                                             />
                                         </el-select>
-                                        <el-select placeholder="Chọn quận/huyện">
-                                            <el-option />
+                                        <el-select
+                                            placeholder="Chọn quận/huyện"
+                                            v-model="district"
+                                            remote
+                                            :remote-method="loadDistricts"
+                                            @change="console.log(district)"
+                                        >
+                                            <el-option
+                                                v-for="(item, index) in districtOptions"
+                                                :key="index"
+                                                :label="item.name"
+                                                :value="item._id"
+                                            />
                                         </el-select>
                                     </div>
                                 </el-form-item>
@@ -99,10 +112,16 @@ import type { Account } from '@/interfaces/index';
 import { RoleServices } from '@/services/role/RoleServices';
 import useAuthStore from '@/stores/useAuthStore';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { UserServices } from '@/services/user/UserServices';
+import { ElMessage } from 'element-plus';
+import router from '@/router';
+import { createAxiosJwt } from '@/utils/createInstance';
+import { DistrictServices } from '../services/district/DistrictServices';
 
 const authStore = useAuthStore();
 
 const user = computed(() => authStore.userInfo);
+const httpJwt = createAxiosJwt(authStore.userInfo);
 
 const userInfoForm = ref<Account | null>(null);
 
@@ -113,6 +132,8 @@ const phone = ref<string>(user.value.phone);
 const address = ref<string>('');
 const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
+const district = ref<string>('');
+const districtOptions = ref<any[]>([]);
 const location = ref<string>('Hà Nội');
 const avatar = ref<any | null>();
 const avatarInput = ref<HTMLInputElement | null>(null);
@@ -142,40 +163,51 @@ const handleChangeAvatar = () => {
 };
 
 const loadProvinces = async () => {
-    const res = await ProvinceServices.getAll();
-    console.log(res);
-    provinceOptions.value = res;
+    provinceOptions.value = await ProvinceServices.getAll();
+};
+
+const loadDistricts = async (provinceId: any) => {
+    districtOptions.value = await DistrictServices.getDistrictByProvinceId(provinceId);
+};
+
+const handleChooseProvince = () => {
+    loadDistricts(province.value);
 };
 
 const handleSubmit = async () => {
-    // const formData = new FormData();
-    // formData.append('username', username.value);
-    // formData.append('email', email.value);
-    // formData.append('phone', phone.value);
-    // formData.append('address', address.value);
-    // formData.append('avatar', avatar.value);
-    // try {
-    //     await UserServices.update(user.value, formData, httpJwt);
-    loadingFullScreen();
-    // ElMessage({
-    //     message: 'Sửa thành công. Bạn cần đăng nhập lại.',
-    //     type: 'success',
-    // });
-    //     if (user.value !== null) {
-    //         await authStore.logout(user.value);
-    //         await router.push({ name: 'login' });
-    //     }
-    //     // console.log(formData);
-    // } catch (error) {
-    //     console.error('Failed to submit' + error);
-    //     ElMessage.error('Sửa thất bại.');
-    // }
+    const formData = new FormData();
+    formData.append('username', username.value);
+    formData.append('email', email.value);
+    formData.append('phone', phone.value);
+    formData.append('address', district.value);
+    formData.append('avatar', avatar.value);
+    try {
+        await UserServices.update(user.value, formData, httpJwt);
+        loadingFullScreen();
+        ElMessage({
+            message: 'Sửa thành công. Bạn cần đăng nhập lại.',
+            type: 'success',
+        });
+        if (user.value !== null) {
+            await authStore.logout(user.value, httpJwt);
+            await router.push({ name: 'login' });
+        }
+    } catch (error) {
+        console.error('Failed to submit' + error);
+        ElMessage.error('Sửa thất bại.');
+    }
 };
 
 onMounted(async () => {
     role.value = (await RoleServices.getRoleById(user.value.role)).description;
-    provinceOptions.value = await ProvinceServices.getAll();
+    loadProvinces();
     userInfoForm.value = user.value;
+    if (user.value.address) {
+        const districtResponse = await DistrictServices.getDistrictById(user.value.address);
+        district.value = districtResponse.name;
+        province.value = (await ProvinceServices.getProvinceById(districtResponse.provinceId)).name;
+        console.log(district.value + ' - ' + province.value);
+    }
 });
 </script>
 
