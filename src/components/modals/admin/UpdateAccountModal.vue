@@ -24,14 +24,30 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="Địa điểm làm việc">
-                <el-select v-model="address" class="m-2" placeholder="Địa điểm">
-                    <el-option
-                        v-for="(item, index) in addressOptions"
-                        :key="index"
-                        :label="item.label"
-                        :value="item.value"
-                    />
-                </el-select>
+                <div class="address-option">
+                    <el-select
+                        placeholder="Chọn tỉnh/thành phố"
+                        v-model="province"
+                        remote
+                        :remote-method="loadProvinces"
+                        @change="handleChooseProvince"
+                    >
+                        <el-option
+                            v-for="(item, index) in provinceOptions"
+                            :key="index"
+                            :label="item.name"
+                            :value="item._id"
+                        />
+                    </el-select>
+                    <el-select placeholder="Chọn quận/huyện" v-model="district" remote :remote-method="loadDistricts">
+                        <el-option
+                            v-for="(item, index) in districtOptions"
+                            :key="index"
+                            :label="item.name"
+                            :value="item._id"
+                        />
+                    </el-select>
+                </div>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -44,38 +60,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { Account } from '@/interfaces/index';
+import { DistrictServices } from '@/services/district/DistrictServices';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
+import Role from '@/constants/roles';
 
 const visible = ref<boolean>(false);
 const postForm = ref<Account>();
 const roleOptions = [
     {
-        label: 'Trưởng điểm tập kết',
-        value: '1',
+        label: 'Trưởng điểm tại điểm tập kết',
+        value: Role.GATHERING_MANAGER_ROLE,
     },
     {
-        label: 'Trưởng điểm giao dịch',
-        value: '2',
-    },
-];
-
-const addressOptions = [
-    {
-        label: 'Hà Nội',
-        value: 'Hà Nội',
-    },
-    {
-        label: 'Hải Dương',
-        value: 'Hải Dương',
-    },
-    {
-        label: 'Hưng Yên',
-        value: 'Hưng Yên',
-    },
-    {
-        label: 'Quảng Ninh',
-        value: 'Quảng Ninh',
+        label: 'Trưởng điểm tại điểm giao dịch',
+        value: Role.TRANSACTION_MANAGER_ROLE,
     },
 ];
 
@@ -83,8 +83,30 @@ const username = ref<string>('');
 const email = ref<string>('');
 const password = ref<string>('');
 const role = ref<string>('');
-const address = ref<string>('');
 const phone = ref<string>('');
+
+const province = ref<string>('');
+const provinceOptions = ref<any[]>([]);
+const district = ref<string>('');
+const districtOptions = ref<any[]>([]);
+
+const loadProvinces = async () => {
+    provinceOptions.value = await ProvinceServices.getAll();
+};
+
+const loadDistricts = async (provinceId: any) => {
+    districtOptions.value = await DistrictServices.getDistrictByProvinceId(provinceId);
+};
+
+const handleChooseProvince = () => {
+    districtOptions.value = [];
+    district.value = '';
+    loadDistricts(province.value);
+};
+
+onMounted(async () => {
+    loadProvinces();
+});
 
 async function openModal() {
     visible.value = true;
@@ -95,4 +117,13 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.address-option {
+    display: flex;
+    justify-content: space-between;
+}
+
+.el-select + .el-select {
+    margin-left: 20px;
+}
+</style>

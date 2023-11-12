@@ -4,7 +4,7 @@
             <el-col :span="24">
                 <div class="profile-info">
                     <el-form :model="userInfoForm" label-position="top" class="info-form">
-                        <el-row gutter="40" justify="space-around">
+                        <el-row :gutter="40" justify="space-around">
                             <el-col :span="8">
                                 <el-form-item class="avatar-uploader">
                                     <input
@@ -50,11 +50,11 @@
                                     <el-input v-model="email" type="email" />
                                 </el-form-item>
                                 <el-form-item label="Vai trò:" prop="role">
-                                    <el-input v-model="role" disabled="true" />
+                                    <el-input v-model="role" :disabled="true" />
                                 </el-form-item>
                                 <template v-if="!isCustomer()">
                                     <el-form-item label="Nơi làm việc:">
-                                        <el-input v-model="location" disabled="true" />
+                                        <el-input v-model="location" :disabled="true" />
                                     </el-form-item>
                                 </template>
                                 <el-form-item label="Số điện thoại:" prop="phone">
@@ -68,7 +68,6 @@
                                             remote
                                             :remote-method="loadProvinces"
                                             @change="handleChooseProvince"
-                                            default-first-option="true"
                                         >
                                             <el-option
                                                 v-for="(item, index) in provinceOptions"
@@ -82,7 +81,6 @@
                                             v-model="district"
                                             remote
                                             :remote-method="loadDistricts"
-                                            @change="console.log(district)"
                                         >
                                             <el-option
                                                 v-for="(item, index) in districtOptions"
@@ -171,6 +169,8 @@ const loadDistricts = async (provinceId: any) => {
 };
 
 const handleChooseProvince = () => {
+    districtOptions.value = [];
+    district.value = '';
     loadDistricts(province.value);
 };
 
@@ -205,8 +205,8 @@ onMounted(async () => {
     if (user.value.address) {
         const districtResponse = await DistrictServices.getDistrictById(user.value.address);
         district.value = districtResponse.name;
+        console.log(district.value);
         province.value = (await ProvinceServices.getProvinceById(districtResponse.provinceId)).name;
-        console.log(district.value + ' - ' + province.value);
     }
 });
 </script>

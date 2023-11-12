@@ -1,6 +1,6 @@
 <template>
     <el-footer id="footer">
-        <div class="footer-content">Footer dau buoi</div>
+        <div class="footer-content">Footer</div>
     </el-footer>
 </template>
 

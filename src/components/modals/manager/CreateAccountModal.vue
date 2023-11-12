@@ -17,7 +17,30 @@
                 <el-input v-model="role" type="text" disabled placeholder="Nhân viên điểm tập kết" />
             </el-form-item>
             <el-form-item label="Địa điểm làm việc">
-                <el-input v-model="address" type="text" disabled placeholder="Hà Nội" />
+                <div class="address-option">
+                    <el-select
+                        placeholder="Chọn tỉnh/thành phố"
+                        v-model="province"
+                        remote
+                        :remote-method="loadProvinces"
+                        @change="handleChooseProvince"
+                    >
+                        <el-option
+                            v-for="(item, index) in provinceOptions"
+                            :key="index"
+                            :label="item.name"
+                            :value="item._id"
+                        />
+                    </el-select>
+                    <el-select placeholder="Chọn quận/huyện" v-model="district" remote :remote-method="loadDistricts">
+                        <el-option
+                            v-for="(item, index) in districtOptions"
+                            :key="index"
+                            :label="item.name"
+                            :value="item._id"
+                        />
+                    </el-select>
+                </div>
             </el-form-item>
         </el-form>
         <template #footer>
@@ -32,6 +55,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { Account } from '@/interfaces/index';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { DistrictServices } from '@/services/district/DistrictServices';
 
 const visible = ref<boolean>(false);
 const postForm = ref<Account>();
@@ -40,8 +65,26 @@ const username = ref<string>('');
 const email = ref<string>('');
 const password = ref<string>('');
 const role = ref<string>('');
-const address = ref<string>('');
 const phone = ref<string>('');
+
+const province = ref<string>('');
+const provinceOptions = ref<any[]>([]);
+const district = ref<string>('');
+const districtOptions = ref<any[]>([]);
+
+const loadProvinces = async () => {
+    provinceOptions.value = await ProvinceServices.getAll();
+};
+
+const loadDistricts = async (provinceId: any) => {
+    districtOptions.value = await DistrictServices.getDistrictByProvinceId(provinceId);
+};
+
+const handleChooseProvince = () => {
+    districtOptions.value = [];
+    district.value = '';
+    loadDistricts(province.value);
+};
 
 async function openModal() {
     visible.value = true;
@@ -52,4 +95,9 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.address-option {
+    display: flex;
+    justify-content: space-between;
+}
+</style>

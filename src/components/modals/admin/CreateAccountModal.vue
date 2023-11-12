@@ -1,14 +1,39 @@
 <template>
     <el-dialog v-model="visible" title="Tạo tài khoản cho trưởng điểm" width="40%" top="8vh">
         <el-form :model="postForm" label-position="top">
-            <el-form-item label="Họ tên">
+            <el-form-item
+                label="Họ tên:"
+                prop="username"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Vui lòng nhập tên người dùng',
+                        trigger: 'blur',
+                    },
+                ]"
+            >
                 <el-input v-model="username" type="text" />
             </el-form-item>
-            <el-form-item label="Email">
-                <el-input v-model="email" type="text" />
+            <el-form-item
+                label="Email:"
+                prop="email"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Vui lòng nhập email',
+                        trigger: 'blur',
+                    },
+                    {
+                        type: 'email',
+                        message: 'Vui lòng nhập đúng email',
+                        trigger: ['blur', 'change'],
+                    },
+                ]"
+            >
+                <el-input v-model="email" type="email" />
             </el-form-item>
             <el-form-item label="Mật khẩu">
-                <el-input v-model="password" type="text" />
+                <el-input v-model="password" type="password" />
             </el-form-item>
             <el-form-item label="Số điện thoại">
                 <el-input v-model="phone" type="text" />
@@ -24,67 +49,117 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="Địa điểm làm việc">
-                <el-select v-model="address" class="m-2" placeholder="Địa điểm">
-                    <el-option
-                        v-for="(item, index) in addressOptions"
-                        :key="index"
-                        :label="item.label"
-                        :value="item.value"
-                    />
-                </el-select>
+                <div class="address-option">
+                    <el-select
+                        placeholder="Chọn tỉnh/thành phố"
+                        v-model="province"
+                        remote
+                        :remote-method="loadProvinces"
+                        @change="handleChooseProvince"
+                    >
+                        <el-option
+                            v-for="(item, index) in provinceOptions"
+                            :key="index"
+                            :label="item.name"
+                            :value="item._id"
+                        />
+                    </el-select>
+                    <el-select placeholder="Chọn quận/huyện" v-model="district" remote :remote-method="loadDistricts">
+                        <el-option
+                            v-for="(item, index) in districtOptions"
+                            :key="index"
+                            :label="item.name"
+                            :value="item._id"
+                        />
+                    </el-select>
+                </div>
             </el-form-item>
         </el-form>
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Huỷ bỏ</el-button>
-                <el-button type="primary" @click="visible = false"> Tạo mới </el-button>
+                <el-button type="primary" @click="handleCreateAccount"> Tạo mới </el-button>
             </span>
         </template>
     </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import type { Account } from '@/interfaces/index';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { DistrictServices } from '@/services/district/DistrictServices';
+import Role from '@/constants/roles';
+import { UserServices } from '@/services/user/UserServices';
+import useAuthStore from '@/stores/useAuthStore';
+import { createAxiosJwt } from '@/utils/createInstance';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import { ElMessage } from 'element-plus';
+import router from '@/router';
 
+const authStore = useAuthStore();
+const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
 const postForm = ref<Account>();
 const roleOptions = [
     {
-        label: 'Trưởng điểm tập kết',
-        value: '1',
+        label: 'Trưởng điểm tại điểm tập kết',
+        value: Role.GATHERING_MANAGER_ROLE,
     },
     {
-        label: 'Trưởng điểm giao dịch',
-        value: '2',
+        label: 'Trưởng điểm tại điểm giao dịch',
+        value: Role.TRANSACTION_MANAGER_ROLE,
     },
 ];
-
-const addressOptions = [
-    {
-        label: 'Hà Nội',
-        value: 'Hà Nội',
-    },
-    {
-        label: 'Hải Dương',
-        value: 'Hải Dương',
-    },
-    {
-        label: 'Hưng Yên',
-        value: 'Hưng Yên',
-    },
-    {
-        label: 'Quảng Ninh',
-        value: 'Quảng Ninh',
-    },
-];
-
 const username = ref<string>('');
 const email = ref<string>('');
 const password = ref<string>('');
 const role = ref<string>('');
-const address = ref<string>('');
 const phone = ref<string>('');
+const province = ref<string>('');
+const provinceOptions = ref<any[]>([]);
+const district = ref<string>('');
+const districtOptions = ref<any[]>([]);
+
+const loadProvinces = async () => {
+    provinceOptions.value = await ProvinceServices.getAll();
+};
+
+const loadDistricts = async (provinceId: any) => {
+    districtOptions.value = await DistrictServices.getDistrictByProvinceId(provinceId);
+};
+
+const handleChooseProvince = () => {
+    districtOptions.value = [];
+    district.value = '';
+    loadDistricts(province.value);
+};
+
+const handleCreateAccount = async () => {
+    const formData = new FormData();
+    formData.append('username', username.value);
+    formData.append('email', email.value);
+    formData.append('password', password.value);
+    formData.append('role', role.value);
+    formData.append('phone', phone.value);
+    formData.append('workPlace', district.value);
+    try {
+        await UserServices.createManagerAccount(authStore.userInfo, formData, httpJwt);
+        loadingFullScreen();
+        ElMessage({
+            message: 'Tạo tài khoản thành công.',
+            type: 'success',
+        });
+        await router.push({ name: 'home' });
+    } catch (error) {
+        ElMessage.error('Tạo tài khoản thất bại.');
+        console.error('fail to create manager account ' + error);
+    }
+};
+
+onMounted(async () => {
+    loadProvinces();
+});
 
 async function openModal() {
     visible.value = true;
@@ -95,4 +170,13 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.address-option {
+    display: flex;
+    justify-content: space-between;
+}
+
+.el-select + .el-select {
+    margin-left: 20px;
+}
+</style>
