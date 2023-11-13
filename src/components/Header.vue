@@ -91,7 +91,7 @@ const changeLoginPage = () => {
 }
 
 .menu .no-hover:hover {
-    color: inherit !important;
+    color: !important;
     background-color: transparent !important;
 }
 
@@ -102,5 +102,8 @@ const changeLoginPage = () => {
 
 .avatar {
     margin-left: 8px;
+}
+.menu {
+    color: hidden;
 }
 </style>

@@ -18,9 +18,9 @@ import Footer from '@/components/Footer.vue';
 <style scoped>
 #main {
     margin-top: 60px;
-    margin-bottom: 60px;
-    max-width: 80%;
-    margin-right: auto;
-    margin-left: auto;
+    margin-bottom: 0px;
+    max-width: 100%;
+    margin-right: 0px;
+    margin-left: 0px;
 }
 </style>
