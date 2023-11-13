@@ -17,6 +17,15 @@ const useProvinceStore = defineStore({
                 const res = await DistrictServices.getDistrictByProvinceId(provinceId);
                 this.districts = res;
             } catch (error) {
+                console.error('failed to get district by province id ' + error);
+            }
+        },
+
+        async getAllDistricts() {
+            try {
+                const res = await DistrictServices.getAll();
+                this.districts = res;
+            } catch (error) {
                 console.error('failed to get all ' + error);
             }
         },

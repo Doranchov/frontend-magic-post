@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import useProvinceStore from '@/stores/useProvinceStore';
 import useDistrictStore from '@/stores/useDistrictStore';
 import type { District } from '@/interfaces/index';
@@ -15,17 +15,18 @@ const districtStore = useDistrictStore();
 
 const options = ref<AddressOption[]>([]);
 
-onMounted(async () => {
+onBeforeMount(async () => {
     await provinceStore.getAllProvinces();
-
+    await districtStore.getAllDistricts();
     for (const province of provinceStore.provinces) {
-        await districtStore.getDistrictByProvinceId(province._id);
         const childrens: any[] = [];
         for (const district of districtStore.districts) {
-            childrens.push({
-                value: district._id,
-                label: district.name,
-            });
+            if (district.provinceId === province._id) {
+                childrens.push({
+                    value: district._id,
+                    label: district.name,
+                });
+            }
         }
         options.value.push({
             label: province.name,
