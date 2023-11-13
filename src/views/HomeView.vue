@@ -19,7 +19,6 @@ onMounted(async () => {
     await provinceStore.getAllProvinces();
 
     for (const province of provinceStore.provinces) {
-        // console.log(province);
         await districtStore.getDistrictByProvinceId(province._id);
         const childrens: any[] = [];
         for (const district of districtStore.districts) {
@@ -34,13 +33,12 @@ onMounted(async () => {
             children: childrens,
         });
     }
-    console.log(options.value);
 });
 </script>
 <template>
     <div class="app">
         <div>
-            <img class="background-image" src="src/assets/web-shipping.jpg" />
+            <el-image class="background-image" src="src/assets/web-shipping.jpg" />
         </div>
         <div id="intro">
             <p>TIẾT KIỆM THỜI GIAN VÀ TIỀN BẠC - LÊN TỚI 75% CHO ĐƠN HÀNG ĐẦU TIÊN</p>
@@ -50,7 +48,7 @@ onMounted(async () => {
             <el-button class="create" type="warning" round>Khởi tạo đơn hàng</el-button>
         </div>
     </div>
-    <br /><br /><br />
+
     <div class="info">
         <h1>Hàng triệu người tin dùng MagicPost</h1>
     </div>
@@ -99,9 +97,7 @@ onMounted(async () => {
     height: 7vh;
     margin: 2vh 0 0 8vw;
 }
-el-cascader {
-    size: 500px;
-}
+
 .info h1 {
     text-align: center;
 
