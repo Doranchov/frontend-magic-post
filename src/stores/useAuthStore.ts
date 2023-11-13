@@ -61,6 +61,7 @@ const useAuthStore = defineStore({
                     avatar: '',
                     refreshToken: '',
                     accessToken: '',
+                    workPlace: '',
                 };
                 this.isLoggedIn = false;
                 localStorage.removeItem('isLoggedIn');

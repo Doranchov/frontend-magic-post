@@ -1,32 +1,41 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
+import useProvinceStore from '@/stores/useProvinceStore';
+import useDistrictStore from '@/stores/useDistrictStore';
+import type { District } from '@/interfaces/index';
 
-const options = [
-    {
-        value: 'Thái Bình',
-        label: 'Thái Bình',
-        children: [
-            {
-                value: 'Thái Thụy',
-                label: 'Thái Thụy',
-            },
-            {
-                value: 'Đông Hưng',
-                label: 'Đông Hứng',
-            },
-        ],
-    },
-    {
-        value: 'Hải Dương',
-        label: 'Hải Dương',
-        children: [
-            {
-                value: 'Kinh Môn',
-                label: 'Kinh Môn',
-            },
-        ],
-    },
-];
+interface AddressOption {
+    label: string;
+    value: string;
+    children: District[];
+}
+
+const provinceStore = useProvinceStore();
+const districtStore = useDistrictStore();
+
+const options = ref<AddressOption[]>([]);
+
+onMounted(async () => {
+    await provinceStore.getAllProvinces();
+
+    for (const province of provinceStore.provinces) {
+        // console.log(province);
+        await districtStore.getDistrictByProvinceId(province._id);
+        const childrens: any[] = [];
+        for (const district of districtStore.districts) {
+            childrens.push({
+                value: district._id,
+                label: district.name,
+            });
+        }
+        options.value.push({
+            label: province.name,
+            value: province._id,
+            children: childrens,
+        });
+    }
+    console.log(options.value);
+});
 </script>
 <template>
     <div class="app">
