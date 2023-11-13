@@ -9,6 +9,7 @@ export interface Account {
     avatar: string;
     refreshToken: string;
     accessToken: string;
+    workPlace: string;
 }
 
 export interface Role {
@@ -23,4 +24,18 @@ export interface Token {
     admin: boolean;
     iat: number;
     exp: number;
+}
+
+export interface District {
+    _id: string;
+    name: string;
+    code: string;
+    provinceId: string;
+}
+
+export interface Province {
+    _id: string;
+    name: string;
+    code: string;
+    districts: any[];
 }
