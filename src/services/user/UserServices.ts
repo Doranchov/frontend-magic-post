@@ -9,6 +9,7 @@ export const UserServices = {
         });
     },
 
+    // admin role
     getGatheringManager: async (user: any, httpJwt: any) => {
         return (
             await httpJwt.get(UserAPI.LIST_GATHERING_MANAGER_ACCOUNT, {

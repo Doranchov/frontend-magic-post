@@ -2,20 +2,25 @@
     <div class="title-page">
         <h1>Tài Khoản Trưởng Điểm Tập Kết</h1>
     </div>
-    <el-table :data="tableData" class="table">
-        <el-table-column label="STT" prop="stt" width="60"></el-table-column>
-        <el-table-column label="Họ tên" prop="username"></el-table-column>
-        <el-table-column label="Email" prop="email" width="250"></el-table-column>
-        <el-table-column label="Mật khẩu" prop="password"></el-table-column>
-        <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
-        <el-table-column label="Nơi làm việc" prop="gathering"></el-table-column>
-        <el-table-column fixed="right" label="Hành động" width="150">
-            <template #default>
-                <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal()">Sửa</el-button>
-                <el-button type="danger" size="small" @click="visible = true" plain>Xóa</el-button>
-            </template>
-        </el-table-column>
-    </el-table>
+    <el-row justify="center">
+        <el-col :span="24">
+            <el-table :data="tableData" v-loading="tableLoading" class="table" table-layout="fixed">
+                <el-table-column label="STT" prop="stt" width="60"></el-table-column>
+                <el-table-column label="Họ tên" prop="username"></el-table-column>
+                <el-table-column label="Email" prop="email" width="250"></el-table-column>
+                <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
+                <el-table-column label="Nơi làm việc" prop="workPlace" width="320"></el-table-column>
+                <el-table-column fixed="right" label="Hành động" width="150">
+                    <template v-slot="scope" #default>
+                        <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal(scope.row)"
+                            >Sửa</el-button
+                        >
+                        <el-button type="danger" size="small" @click="visible = true" plain>Xóa</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-col>
+    </el-row>
 
     <el-dialog v-model="visible" title="Xóa tài khoản" width="30%">
         <span> Bạn có muốn xóa tài khoản này không ? </span>
@@ -43,41 +48,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import CreateAccountModal from '@/components/modals/admin/CreateAccountModal.vue';
 import UpdateAccountModal from '@/components/modals/admin/UpdateAccountModal.vue';
+import { UserServices } from '@/services/user/UserServices';
+import useAuthStore from '@/stores/useAuthStore';
+import { createAxiosJwt } from '@/utils/createInstance';
+import type { Account } from '@/interfaces';
+import { DistrictServices } from '@/services/district/DistrictServices';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
 
-const tableData = ref<any[]>([
-    {
-        stt: 1,
-        username: 'Le Nghia',
-        email: 'abc@example.com',
-        password: '123456',
-        phone: '012345678',
-        gathering: 'Hải Dương',
-    },
-    {
-        stt: 2,
-        username: 'Tran Manh',
-        email: 'abc123@example.com',
-        password: '123456',
-        phone: '012345678',
-        gathering: 'Bắc Cạn',
-    },
-    {
-        stt: 3,
-        username: 'Giang Minh',
-        email: 'abc1234@example.com',
-        password: '123456',
-        phone: '012345678',
-        gathering: 'Lào Cai',
-    },
-]);
-
+const tableData = ref<any[]>([]);
+const authStore = useAuthStore();
+const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
+const tableLoading = ref<boolean>(false);
 
 const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
 const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
+
+onMounted(async () => {
+    try {
+        tableLoading.value = true;
+        const res = await UserServices.getGatheringManager(authStore.userInfo, httpJwt);
+        res.map(async (account: Account, index: number) => {
+            const district = await DistrictServices.getDistrictById(account.workPlace);
+            const province = await ProvinceServices.getProvinceById(district.provinceId);
+
+            tableData.value.push({
+                _id: account._id,
+                stt: index + 1,
+                username: account.username,
+                email: account.email,
+                phone: account.phone,
+                workPlace: `${district.name} - ${province.name}`,
+                district: district.name,
+                province: province.name,
+                role: account.role,
+            });
+        });
+    } catch (e) {
+        console.error(e);
+    } finally {
+        tableLoading.value = false;
+    }
+});
 </script>
 
 <style scoped>
@@ -90,6 +105,9 @@ const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
 }
 
 .table {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-add {

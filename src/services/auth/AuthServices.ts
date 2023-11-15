@@ -3,7 +3,7 @@ import { AuthAPI } from '@/api/auth/AuthAPI';
 
 export const AuthServices = {
     login: async (user: any) => {
-        return (await http.post(AuthAPI.LOGIN, user)).data;
+        return await http.post(AuthAPI.LOGIN, user);
     },
 
     logout: async (user: any, httpJwt: any) => {

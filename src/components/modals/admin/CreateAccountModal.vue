@@ -1,36 +1,11 @@
 <template>
     <el-dialog v-model="visible" title="Tạo tài khoản cho trưởng điểm" width="40%" top="8vh">
         <el-form :model="postForm" label-position="top">
-            <el-form-item
-                label="Họ tên:"
-                prop="username"
-                :rules="[
-                    {
-                        required: true,
-                        message: 'Vui lòng nhập tên người dùng',
-                        trigger: 'blur',
-                    },
-                ]"
-            >
-                <el-input v-model="username" type="text" />
+            <el-form-item label="Họ tên:" prop="username">
+                <el-input v-model="username" type="text" @change="console.log(username)" />
             </el-form-item>
-            <el-form-item
-                label="Email:"
-                prop="email"
-                :rules="[
-                    {
-                        required: true,
-                        message: 'Vui lòng nhập email',
-                        trigger: 'blur',
-                    },
-                    {
-                        type: 'email',
-                        message: 'Vui lòng nhập đúng email',
-                        trigger: ['blur', 'change'],
-                    },
-                ]"
-            >
-                <el-input v-model="email" type="email" />
+            <el-form-item label="Email:" prop="email">
+                <el-input v-model="email" type="email" @change="console.log(email)" />
             </el-form-item>
             <el-form-item label="Mật khẩu">
                 <el-input v-model="password" type="password" />
@@ -85,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import type { Account } from '@/interfaces/index';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { DistrictServices } from '@/services/district/DistrictServices';
@@ -96,11 +71,18 @@ import { createAxiosJwt } from '@/utils/createInstance';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import { ElMessage } from 'element-plus';
 import router from '@/router';
+import { UserAPI } from '@/api/user/UserAPI';
+import axios from 'axios';
+import { http } from '@/utils/http';
 
 const authStore = useAuthStore();
+const user = computed(() => authStore.userInfo);
 const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
-const postForm = ref<Account>();
+const postForm = ref<any>({
+    username: '',
+    email: '',
+});
 const roleOptions = [
     {
         label: 'Trưởng điểm tại điểm tập kết',
@@ -135,28 +117,6 @@ const handleChooseProvince = () => {
     loadDistricts(province.value);
 };
 
-const handleCreateAccount = async () => {
-    const formData = new FormData();
-    formData.append('username', username.value);
-    formData.append('email', email.value);
-    formData.append('password', password.value);
-    formData.append('role', role.value);
-    formData.append('phone', phone.value);
-    formData.append('workPlace', district.value);
-    try {
-        await UserServices.createManagerAccount(authStore.userInfo, formData, httpJwt);
-        loadingFullScreen();
-        ElMessage({
-            message: 'Tạo tài khoản thành công.',
-            type: 'success',
-        });
-        await router.push({ name: 'home' });
-    } catch (error) {
-        ElMessage.error('Tạo tài khoản thất bại.');
-        console.error('fail to create manager account ' + error);
-    }
-};
-
 onMounted(async () => {
     loadProvinces();
 });
@@ -168,6 +128,33 @@ async function openModal() {
 defineExpose({
     openModal,
 });
+
+const handleCreateAccount = async () => {
+    const formData = new FormData();
+    formData.append('username', username.value);
+    formData.append('email', email.value);
+    formData.append('password', password.value);
+    formData.append('role', role.value);
+    formData.append('phone', phone.value);
+    formData.append('workPlace', district.value);
+    try {
+        const res = await http.post(UserAPI.CREATE_MANAGER, formData, {
+            headers: {
+                token: `Bearer ${user.value.accessToken}`,
+            },
+        });
+        console.log(res.data.data);
+        loadingFullScreen();
+        ElMessage({
+            message: 'Tạo tài khoản thành công.',
+            type: 'success',
+        });
+        // await router.push({ name: 'home' });
+    } catch (error) {
+        ElMessage.error('Tạo tài khoản thất bại.');
+        console.error('fail to create manager account ' + error);
+    }
+};
 </script>
 
 <style scoped>

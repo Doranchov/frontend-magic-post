@@ -1,11 +1,11 @@
 <template>
     <div class="container">
-        <el-row justify="center">
+        <el-row :justify="isMobile ? 'center' : 'start'">
             <el-col :span="24">
                 <div class="profile-info">
                     <el-form :model="userInfoForm" label-position="top" class="info-form">
-                        <el-row :gutter="40" justify="space-around">
-                            <el-col :span="8">
+                        <el-row :gutter="isMobile ? 0 : 40" justify="space-around">
+                            <el-col :span="isMobile ? 24 : 8">
                                 <el-form-item class="avatar-uploader">
                                     <input
                                         type="file"
@@ -17,7 +17,7 @@
                                 </el-form-item>
                                 <h1>Hồ sơ cá nhân</h1></el-col
                             >
-                            <el-col :span="12">
+                            <el-col :span="isMobile ? 18 : 12" class="user-info">
                                 <el-form-item
                                     label="Họ tên:"
                                     prop="username"
@@ -117,17 +117,13 @@ import { createAxiosJwt } from '@/utils/createInstance';
 import { DistrictServices } from '../services/district/DistrictServices';
 
 const authStore = useAuthStore();
-
 const user = computed(() => authStore.userInfo);
 const httpJwt = createAxiosJwt(authStore.userInfo);
-
 const userInfoForm = ref<Account | null>(null);
-
 const imageUrl: string = user.value.avatar;
 const username = ref<string>(user.value.username);
 const email = ref<string>(user.value.email);
 const phone = ref<string>(user.value.phone);
-const address = ref<string>('');
 const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
@@ -135,15 +131,8 @@ const districtOptions = ref<any[]>([]);
 const location = ref<string>('Hà Nội');
 const avatar = ref<any | null>();
 const avatarInput = ref<HTMLInputElement | null>(null);
+const isMobile = ref<boolean>(false);
 
-const roleArr = [
-    'admin',
-    'customer',
-    'transaction_point_manager',
-    'gathering_point_manager',
-    'transaction_point_staff',
-    'gathering_point_staff',
-];
 const role = ref<string>('');
 
 const isCustomer = () => {
@@ -152,6 +141,10 @@ const isCustomer = () => {
     } else {
         return false;
     }
+};
+
+const handleResize = () => {
+    isMobile.value = window.innerWidth <= 992;
 };
 
 const handleChangeAvatar = () => {
@@ -199,6 +192,8 @@ const handleSubmit = async () => {
 };
 
 onMounted(async () => {
+    loadingFullScreen();
+    window.addEventListener('resize', handleResize);
     role.value = (await RoleServices.getRoleById(user.value.role)).description;
     loadProvinces();
     userInfoForm.value = user.value;
@@ -217,8 +212,8 @@ onMounted(async () => {
 }
 
 .avatar-uploader .avatar {
-    width: 360px;
-    height: 360px;
+    width: 100%;
+    height: auto;
     display: block;
     border-radius: 50%;
     cursor: pointer;
@@ -248,5 +243,29 @@ h1 {
 
 .el-select + .el-select {
     margin-left: 20px;
+}
+
+.user-info {
+    margin-bottom: 50px;
+}
+
+@media only screen and (max-width: 992px) {
+    .avatar-uploader {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .avatar-input {
+        width: 60%;
+    }
+
+    .avatar-uploader .avatar {
+        width: 60%;
+        height: auto;
+    }
+
+    .info-form {
+        max-width: 100%;
+    }
 }
 </style>

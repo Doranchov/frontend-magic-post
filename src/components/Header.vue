@@ -15,15 +15,11 @@
 
                             <template #dropdown>
                                 <el-dropdown-menu>
-                                    <el-dropdown-item>
-                                        <router-link to="/profile">Hồ sơ cá nhân</router-link>
+                                    <el-dropdown-item @click="handleRoute('/profile')">
+                                        Hồ sơ cá nhân
                                     </el-dropdown-item>
-                                    <el-dropdown-item>
-                                        <router-link to="/settings">Cài đặt</router-link>
-                                    </el-dropdown-item>
-                                    <el-dropdown-item>
-                                        <span @click="() => handleLogout(user)">Đăng xuất</span>
-                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="handleRoute('/settings')"> Cài đặt </el-dropdown-item>
+                                    <el-dropdown-item @click="() => handleLogout(user)"> Đăng xuất </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -33,15 +29,15 @@
 
             <template v-else>
                 <el-menu class="menu" mode="horizontal" :ellipsis="false" background-color="#fff" menu-trigger="click">
-                    <el-menu-item> Magic Post </el-menu-item>
-                    <el-menu-item> Trang chủ </el-menu-item>
-                    <el-menu-item> Về chúng tôi </el-menu-item>
+                    <el-menu-item @click="handleRoute('/')"> Magic Post </el-menu-item>
+                    <el-menu-item @click="handleRoute('/')" index="1"> Trang chủ </el-menu-item>
+                    <el-menu-item @click="handleRoute('/about')" index="2"> Về chúng tôi </el-menu-item>
                     <div class="flex-grow"></div>
                     <el-menu-item class="no-hover">
-                        <el-button type="primary" plain @click="changeRegisterPage">Đăng ký</el-button>
+                        <el-button type="primary" plain @click="handleRoute('/register')">Đăng ký</el-button>
                     </el-menu-item>
                     <el-menu-item class="no-hover">
-                        <el-button type="primary" @click="changeLoginPage"> Đăng nhập </el-button>
+                        <el-button type="primary" @click="handleRoute('/login')"> Đăng nhập </el-button>
                     </el-menu-item>
                 </el-menu>
             </template>
@@ -56,6 +52,7 @@ import useAuthStore from '@/stores/useAuthStore';
 import { computed } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import { createAxiosJwt } from '@/utils/createInstance';
+import { handleRoute } from '@/utils/handleRoute';
 
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
@@ -68,14 +65,6 @@ const handleLogout = (user: any) => {
         authStore.logout(user, httpJwt);
         router.push({ name: 'login' });
     }
-};
-
-const changeRegisterPage = () => {
-    router.push({ name: 'register' });
-};
-
-const changeLoginPage = () => {
-    router.push({ name: 'login' });
 };
 </script>
 
@@ -91,7 +80,7 @@ const changeLoginPage = () => {
 }
 
 .menu .no-hover:hover {
-    color: !important;
+    color: #fff !important;
     background-color: transparent !important;
 }
 

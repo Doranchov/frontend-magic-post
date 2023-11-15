@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <el-row justify="center">
-            <el-col :span="10">
+            <el-col :xs="18" :sm="16" :md="14" :lg="10">
                 <h2 class="title">Đăng ký</h2>
                 <el-form label-position="top" :model="registerForm" ref="registerFormRef">
                     <el-form-item
@@ -59,9 +59,13 @@
                             },
                         ]"
                     >
-                        <el-input v-model="registerForm.password" type="password" />
+                        <el-input v-model="registerForm.password" type="password" :show-password="true" />
                     </el-form-item>
-                    <el-button class="btn-submit" type="primary" @click="submitForm(registerFormRef)"
+                    <el-button
+                        class="btn-submit"
+                        type="primary"
+                        :loading="submitLoading"
+                        @click="submitForm(registerFormRef)"
                         >Đăng ký
                     </el-button>
                 </el-form>
@@ -75,7 +79,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import router from '@/router/index';
 import { ElForm } from 'element-plus';
@@ -88,13 +92,17 @@ const registerForm = reactive<any>({
     password: '',
     phone: '',
 });
+const submitLoading = ref<boolean>(false);
 
 const register = async (user: any) => {
     try {
+        submitLoading.value = true;
         await AuthServices.register(user);
         console.log('Register successful');
     } catch (error) {
         console.error('Register failed: ' + error);
+    } finally {
+        submitLoading.value = false;
     }
 };
 
@@ -110,6 +118,9 @@ const submitForm = (formEl: typeof ElForm | null) => {
         }
     });
 };
+onMounted(() => {
+    loadingFullScreen();
+});
 </script>
 
 <style scoped>

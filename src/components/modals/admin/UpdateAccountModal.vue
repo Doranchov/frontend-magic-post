@@ -7,9 +7,6 @@
             <el-form-item label="Email">
                 <el-input v-model="email" type="text" />
             </el-form-item>
-            <el-form-item label="Mật khẩu">
-                <el-input v-model="password" type="text" />
-            </el-form-item>
             <el-form-item label="Số điện thoại">
                 <el-input v-model="phone" type="text" />
             </el-form-item>
@@ -53,7 +50,7 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Huỷ bỏ</el-button>
-                <el-button type="primary" @click="visible = false"> Tạo mới </el-button>
+                <el-button type="primary" :loading="updateLoading" @click="handleUpdate"> Sửa </el-button>
             </span>
         </template>
     </el-dialog>
@@ -65,8 +62,10 @@ import type { Account } from '@/interfaces/index';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import Role from '@/constants/roles';
+import { RoleServices } from '@/services/role/RoleServices';
 
 const visible = ref<boolean>(false);
+const updateLoading = ref<boolean>(false);
 const postForm = ref<Account>();
 const roleOptions = [
     {
@@ -81,7 +80,6 @@ const roleOptions = [
 
 const username = ref<string>('');
 const email = ref<string>('');
-const password = ref<string>('');
 const role = ref<string>('');
 const phone = ref<string>('');
 
@@ -104,12 +102,29 @@ const handleChooseProvince = () => {
     loadDistricts(province.value);
 };
 
+const handleUpdate = async () => {
+    try {
+        updateLoading.value = true;
+    } catch (e) {
+        console.error(e);
+    } finally {
+        updateLoading.value = false;
+    }
+};
+
 onMounted(async () => {
     loadProvinces();
 });
 
-async function openModal() {
+async function openModal(rowData: any) {
     visible.value = true;
+    username.value = rowData.username;
+    email.value = rowData.email;
+    phone.value = rowData.phone;
+    province.value = rowData.province;
+    district.value = rowData.district;
+    role.value = (await RoleServices.getRoleById(rowData.role)).description;
+    console.log(role.value);
 }
 
 defineExpose({

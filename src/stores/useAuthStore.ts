@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
 import type { Account } from '@/interfaces';
 import { AuthServices } from '@/services/auth/AuthServices';
+import { ElMessage } from 'element-plus';
 
 interface AuthState {
     isLoggedIn: boolean;
     userInfo: Account;
+    error: string;
 }
 
 const loggedInData = localStorage.getItem('isLoggedIn');
@@ -30,6 +32,7 @@ const useAuthStore = defineStore({
     state: (): AuthState => ({
         isLoggedIn: isLoggedIn,
         userInfo: userInfo,
+        error: '',
     }),
     getters: {
         getCurrentUser: (state) => state.userInfo,
@@ -37,11 +40,17 @@ const useAuthStore = defineStore({
     actions: {
         async login(user: any) {
             try {
-                this.userInfo = (await AuthServices.login(user)).data;
-                this.isLoggedIn = true;
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
-                console.log('login success');
+                const res = await AuthServices.login(user);
+                console.log(res.status);
+                if (res.status === 200) {
+                    this.userInfo = res.data.data;
+                    this.isLoggedIn = true;
+                    this.error = '';
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
+                } else {
+                    this.error = 'Tên email hoặc mật khẩu sai.';
+                }
             } catch (error) {
                 console.error('fail to sign in ' + error);
             }
