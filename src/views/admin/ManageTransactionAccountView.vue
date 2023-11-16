@@ -54,6 +54,7 @@ import { createAxiosJwt } from '@/utils/createInstance';
 import type { Account } from '@/interfaces';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
 
 const tableData = ref<any[]>([]);
 const tableLoading = ref<boolean>(false);
@@ -66,6 +67,7 @@ const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
 
 onMounted(async () => {
     try {
+        loadingFullScreen();
         tableLoading.value = true;
         const res = await UserServices.getTransactionManager(authStore.userInfo, httpJwt);
         res.map(async (account: Account, index: number) => {

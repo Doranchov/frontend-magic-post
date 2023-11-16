@@ -44,7 +44,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import { onMounted, ref } from 'vue';
 
 const control = ref<string>('all');
 
@@ -126,6 +127,10 @@ const dataAll = [...dataSend, ...dataReceive];
 const handleChangeRadio = () => {
     // console.log(control.value);
 };
+
+onMounted(() => {
+    loadingFullScreen();
+});
 </script>
 
 <style scoped>

@@ -202,7 +202,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
 
 const district = [
     {
@@ -267,6 +268,10 @@ const methods = [
         value: 'express',
     },
 ];
+
+onMounted(() => {
+    loadingFullScreen();
+});
 </script>
 
 <style scoped>

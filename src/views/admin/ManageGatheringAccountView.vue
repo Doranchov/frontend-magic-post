@@ -4,7 +4,13 @@
     </div>
     <el-row justify="center">
         <el-col :span="24">
-            <el-table :data="tableData" v-loading="tableLoading" class="table" table-layout="fixed">
+            <el-table
+                :data="tableData"
+                v-loading="tableLoading"
+                class="table"
+                table-layout="fixed"
+                :default-sort="{ prop: 'stt', order: 'ascending' }"
+            >
                 <el-table-column label="STT" prop="stt" width="60"></el-table-column>
                 <el-table-column label="Họ tên" prop="username"></el-table-column>
                 <el-table-column label="Email" prop="email" width="250"></el-table-column>
@@ -57,6 +63,7 @@ import { createAxiosJwt } from '@/utils/createInstance';
 import type { Account } from '@/interfaces';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
 
 const tableData = ref<any[]>([]);
 const authStore = useAuthStore();
@@ -69,12 +76,12 @@ const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
 
 onMounted(async () => {
     try {
+        loadingFullScreen();
         tableLoading.value = true;
         const res = await UserServices.getGatheringManager(authStore.userInfo, httpJwt);
         res.map(async (account: Account, index: number) => {
             const district = await DistrictServices.getDistrictById(account.workPlace);
             const province = await ProvinceServices.getProvinceById(district.provinceId);
-
             tableData.value.push({
                 _id: account._id,
                 stt: index + 1,

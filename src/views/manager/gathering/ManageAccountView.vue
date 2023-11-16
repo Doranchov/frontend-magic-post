@@ -43,9 +43,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import CreateAccountModal from '@/components/modals/manager/CreateAccountModal.vue';
 import UpdateAccountModal from '@/components/modals/manager/UpdateAccountModal.vue';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
 
 const tableData = ref<any[]>([
     {
@@ -78,6 +79,10 @@ const visible = ref<boolean>(false);
 
 const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
 const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
+
+onMounted(() => {
+    loadingFullScreen();
+});
 </script>
 
 <style scoped>

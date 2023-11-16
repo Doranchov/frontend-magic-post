@@ -31,6 +31,8 @@ export const UserServices = {
     },
 
     createManagerAccount: async (user: any, data: any, httpJwt: any) => {
+        console.log(user);
+        console.log(data);
         await httpJwt.post(UserAPI.CREATE_MANAGER, data, {
             headers: {
                 token: `Bearer ${user.accessToken}`,

@@ -50,7 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
 
 const control = ref<string>('all');
 const valueSend = ref<string>('');
@@ -209,6 +210,10 @@ const handleChangeValueReceive = (value: any) => {
     dataTableReceive.value = dataReceive.filter((item) => item.deliveryAddress === value);
     console.log(dataTableReceive.value);
 };
+
+onMounted(() => {
+    loadingFullScreen();
+});
 </script>
 
 <style scoped>

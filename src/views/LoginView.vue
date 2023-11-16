@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import router from '@/router/index';
 import { ElForm, ElMessage } from 'element-plus';
@@ -88,6 +88,10 @@ const submitForm = (formEl: typeof ElForm | null) => {
         }
     });
 };
+
+onMounted(() => {
+    loadingFullScreen();
+});
 </script>
 
 <style scoped>

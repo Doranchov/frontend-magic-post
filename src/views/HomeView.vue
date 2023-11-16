@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, onMounted } from 'vue';
 import useProvinceStore from '@/stores/useProvinceStore';
 import useDistrictStore from '@/stores/useDistrictStore';
 import type { District } from '@/interfaces/index';
+import { loadingFullScreen } from '@/utils/loadingFullScreen';
 
 interface AddressOption {
     label: string;
@@ -34,6 +35,10 @@ onBeforeMount(async () => {
             children: childrens,
         });
     }
+});
+
+onMounted(() => {
+    loadingFullScreen();
 });
 </script>
 <template>

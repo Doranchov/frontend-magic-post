@@ -1,20 +1,55 @@
 <template>
     <el-dialog v-model="visible" title="Tạo tài khoản cho trưởng điểm" width="40%" top="8vh">
-        <el-form :model="postForm" label-position="top">
-            <el-form-item label="Họ tên:" prop="username">
-                <el-input v-model="username" type="text" @change="console.log(username)" />
+        <el-form :model="postForm" label-position="top" ref="postFormRef">
+            <el-form-item
+                label="Họ tên:"
+                prop="username"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Vui lòng nhập tên người dùng',
+                        trigger: 'blur',
+                    },
+                ]"
+            >
+                <el-input v-model="postForm.username" type="text" />
             </el-form-item>
-            <el-form-item label="Email:" prop="email">
-                <el-input v-model="email" type="email" @change="console.log(email)" />
+            <el-form-item
+                label="Email:"
+                prop="email"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Vui lòng nhập email',
+                        trigger: 'blur',
+                    },
+                    {
+                        type: 'email',
+                        message: 'Vui lòng nhập đúng email',
+                        trigger: ['blur', 'change'],
+                    },
+                ]"
+            >
+                <el-input v-model="postForm.email" type="email" />
             </el-form-item>
-            <el-form-item label="Mật khẩu">
-                <el-input v-model="password" type="password" />
+            <el-form-item
+                label="Mật khẩu"
+                :rules="[
+                    {
+                        required: true,
+                        message: 'Vui lòng nhập mật khẩu',
+                        trigger: 'blur',
+                    },
+                ]"
+                prop="password"
+            >
+                <el-input v-model="postForm.password" type="password" :show-password="true" />
             </el-form-item>
-            <el-form-item label="Số điện thoại">
-                <el-input v-model="phone" type="text" />
+            <el-form-item label="Số điện thoại" prop="phone">
+                <el-input v-model="postForm.phone" type="text" />
             </el-form-item>
-            <el-form-item label="Chức vụ">
-                <el-select v-model="role" class="m-2" placeholder="Các chức vụ">
+            <el-form-item label="Chức vụ" prop="role">
+                <el-select v-model="postForm.role" class="m-2" placeholder="Các chức vụ">
                     <el-option
                         v-for="(item, index) in roleOptions"
                         :key="index"
@@ -23,7 +58,7 @@
                     />
                 </el-select>
             </el-form-item>
-            <el-form-item label="Địa điểm làm việc">
+            <el-form-item label="Địa điểm làm việc" prop="workPlace">
                 <div class="address-option">
                     <el-select
                         placeholder="Chọn tỉnh/thành phố"
@@ -39,7 +74,12 @@
                             :value="item._id"
                         />
                     </el-select>
-                    <el-select placeholder="Chọn quận/huyện" v-model="district" remote :remote-method="loadDistricts">
+                    <el-select
+                        placeholder="Chọn quận/huyện"
+                        v-model="postForm.workPlace"
+                        remote
+                        :remote-method="loadDistricts"
+                    >
                         <el-option
                             v-for="(item, index) in districtOptions"
                             :key="index"
@@ -53,15 +93,14 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Huỷ bỏ</el-button>
-                <el-button type="primary" @click="handleCreateAccount"> Tạo mới </el-button>
+                <el-button type="primary" @click="submitForm(postFormRef)"> Tạo mới </el-button>
             </span>
         </template>
     </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import type { Account } from '@/interfaces/index';
+import { ref, onMounted, computed, reactive } from 'vue';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import Role from '@/constants/roles';
@@ -69,20 +108,22 @@ import { UserServices } from '@/services/user/UserServices';
 import useAuthStore from '@/stores/useAuthStore';
 import { createAxiosJwt } from '@/utils/createInstance';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
-import { ElMessage } from 'element-plus';
+import { ElForm, ElMessage } from 'element-plus';
 import router from '@/router';
-import { UserAPI } from '@/api/user/UserAPI';
-import axios from 'axios';
-import { http } from '@/utils/http';
 
 const authStore = useAuthStore();
-const user = computed(() => authStore.userInfo);
 const httpJwt = createAxiosJwt(authStore.userInfo);
-const visible = ref<boolean>(false);
-const postForm = ref<any>({
+const postForm = reactive<any>({
     username: '',
     email: '',
+    password: '',
+    phone: '',
+    role: '',
+    workPlace: '',
 });
+
+const postFormRef = ref<typeof ElForm | null>(null);
+const visible = ref<boolean>(false);
 const roleOptions = [
     {
         label: 'Trưởng điểm tại điểm tập kết',
@@ -93,11 +134,6 @@ const roleOptions = [
         value: Role.TRANSACTION_MANAGER_ROLE,
     },
 ];
-const username = ref<string>('');
-const email = ref<string>('');
-const password = ref<string>('');
-const role = ref<string>('');
-const phone = ref<string>('');
 const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
@@ -129,31 +165,31 @@ defineExpose({
     openModal,
 });
 
-const handleCreateAccount = async () => {
-    const formData = new FormData();
-    formData.append('username', username.value);
-    formData.append('email', email.value);
-    formData.append('password', password.value);
-    formData.append('role', role.value);
-    formData.append('phone', phone.value);
-    formData.append('workPlace', district.value);
+const handleCreateAccount = async (data: any) => {
     try {
-        const res = await http.post(UserAPI.CREATE_MANAGER, formData, {
-            headers: {
-                token: `Bearer ${user.value.accessToken}`,
-            },
-        });
-        console.log(res.data.data);
+        await UserServices.createManagerAccount(authStore.userInfo, data, httpJwt);
         loadingFullScreen();
         ElMessage({
             message: 'Tạo tài khoản thành công.',
             type: 'success',
         });
-        // await router.push({ name: 'home' });
     } catch (error) {
         ElMessage.error('Tạo tài khoản thất bại.');
         console.error('fail to create manager account ' + error);
     }
+};
+
+const submitForm = (formEl: typeof ElForm | null) => {
+    if (!formEl) return;
+    formEl.validate((valid: any) => {
+        loadingFullScreen();
+        if (valid) {
+            handleCreateAccount(postForm);
+            router.push({ name: 'login' });
+        } else {
+            return false;
+        }
+    });
 };
 </script>
 
