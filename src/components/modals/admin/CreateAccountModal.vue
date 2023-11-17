@@ -93,7 +93,9 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Huỷ bỏ</el-button>
-                <el-button type="primary" @click="submitForm(postFormRef)"> Tạo mới </el-button>
+                <el-button type="primary" :loading="createLoading" @click="submitForm(postFormRef)">
+                    Tạo mới
+                </el-button>
             </span>
         </template>
     </el-dialog>
@@ -107,10 +109,11 @@ import Role from '@/constants/roles';
 import { UserServices } from '@/services/user/UserServices';
 import useAuthStore from '@/stores/useAuthStore';
 import { createAxiosJwt } from '@/utils/createInstance';
-import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import { ElForm, ElMessage } from 'element-plus';
-import router from '@/router';
 
+const props = defineProps<{
+    tableData: any[];
+}>();
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
 const postForm = reactive<any>({
@@ -138,6 +141,7 @@ const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
 const districtOptions = ref<any[]>([]);
+const createLoading = ref<boolean>(false);
 
 const loadProvinces = async () => {
     provinceOptions.value = await ProvinceServices.getAll();
@@ -167,8 +171,22 @@ defineExpose({
 
 const handleCreateAccount = async (data: any) => {
     try {
-        await UserServices.createManagerAccount(authStore.userInfo, data, httpJwt);
-        loadingFullScreen();
+        visible.value = false;
+        createLoading.value = true;
+        const res = await UserServices.createManagerAccount(authStore.userInfo, data, httpJwt);
+        const district = await DistrictServices.getDistrictById(res.workPlace);
+        const province = await ProvinceServices.getProvinceById(district.provinceId);
+        props.tableData.push({
+            _id: res._id,
+            stt: props.tableData.length,
+            username: res.username,
+            email: res.email,
+            phone: res.phone,
+            workPlace: `${district.name} - ${province.name}`,
+            district: district._id,
+            province: province._id,
+            role: res.role,
+        });
         ElMessage({
             message: 'Tạo tài khoản thành công.',
             type: 'success',
@@ -176,16 +194,16 @@ const handleCreateAccount = async (data: any) => {
     } catch (error) {
         ElMessage.error('Tạo tài khoản thất bại.');
         console.error('fail to create manager account ' + error);
+    } finally {
+        createLoading.value = false;
     }
 };
 
 const submitForm = (formEl: typeof ElForm | null) => {
     if (!formEl) return;
     formEl.validate((valid: any) => {
-        loadingFullScreen();
         if (valid) {
             handleCreateAccount(postForm);
-            router.push({ name: 'login' });
         } else {
             return false;
         }

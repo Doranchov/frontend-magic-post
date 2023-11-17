@@ -2,13 +2,12 @@
     <div class="title-page">
         <h1>Tài Khoản Nhân Viên Tập Kết</h1>
     </div>
-    <el-table :data="tableData" class="table">
-        <el-table-column label="STT" prop="stt" width="60"></el-table-column>
-        <el-table-column label="Họ tên" prop="username"></el-table-column>
+    <el-table :data="tableData" class="table" :default-sort="{ prop: 'stt', order: 'ascending' }">
+        <el-table-column label="STT" prop="stt" width="80" sortable></el-table-column>
+        <el-table-column label="Họ tên" prop="username" sortable></el-table-column>
         <el-table-column label="Email" prop="email" width="250"></el-table-column>
-        <el-table-column label="Mật khẩu" prop="password"></el-table-column>
         <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
-        <el-table-column label="Nơi làm việc" prop="gathering"></el-table-column>
+        <el-table-column label="Nơi làm việc" prop="workPlace"></el-table-column>
         <el-table-column fixed="right" label="Hành động" width="150">
             <template #default>
                 <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal()">Sửa</el-button>
@@ -55,7 +54,7 @@ const tableData = ref<any[]>([
         email: 'abc@example.com',
         password: '123456',
         phone: '012345678',
-        gathering: 'Hà Nội',
+        workPlace: 'Hà Nội',
     },
     {
         stt: 2,
@@ -63,7 +62,7 @@ const tableData = ref<any[]>([
         email: 'abc123@example.com',
         password: '123456',
         phone: '012345678',
-        gathering: 'Hà Nội',
+        workPlace: 'Hà Nội',
     },
     {
         stt: 3,
@@ -71,7 +70,7 @@ const tableData = ref<any[]>([
         email: 'abc1234@example.com',
         password: '123456',
         phone: '012345678',
-        gathering: 'Hà Nội',
+        workPlace: 'Hà Nội',
     },
 ]);
 
@@ -95,6 +94,9 @@ onMounted(() => {
 }
 
 .table {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-add {

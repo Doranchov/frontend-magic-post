@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <el-row justify="center">
-            <el-col :xs="18" :sm="16" :md="14" :lg="10">
+            <el-col :xs="16" :sm="14" :md="12" :lg="8">
                 <h2 class="title">Đăng nhập</h2>
                 <el-form label-position="top" :model="loginForm" ref="loginFormRef">
                     <el-form-item
@@ -35,7 +35,11 @@
                     >
                         <el-input v-model="loginForm.password" type="password" :show-password="true" />
                     </el-form-item>
-                    <el-button class="btn-submit" type="primary" @click="submitForm(loginFormRef)"
+                    <el-button
+                        class="btn-submit"
+                        :loading="submitLoading"
+                        type="primary"
+                        @click="submitForm(loginFormRef)"
                         >Đăng nhập
                     </el-button>
                 </el-form>

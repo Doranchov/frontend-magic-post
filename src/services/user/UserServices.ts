@@ -31,23 +31,25 @@ export const UserServices = {
     },
 
     createManagerAccount: async (user: any, data: any, httpJwt: any) => {
-        console.log(user);
-        console.log(data);
-        await httpJwt.post(UserAPI.CREATE_MANAGER, data, {
-            headers: {
-                token: `Bearer ${user.accessToken}`,
-            },
-        });
+        return (
+            await httpJwt.post(UserAPI.CREATE_MANAGER, data, {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data.data;
     },
 
     updateManagerAccount: async (user: any, data: any, httpJwt: any, managerId: any) => {
-        await httpJwt.put(UserAPI.UPDATE_MANAGER(managerId), data, {
-            headers: { token: `Bearer ${user.accessToken}` },
-        });
+        return (
+            await httpJwt.put(UserAPI.UPDATE_MANAGER(managerId), data, {
+                headers: { token: `Bearer ${user.accessToken}` },
+            })
+        ).data.data;
     },
 
-    deleteManagerAccount: async (user: any, data: any, httpJwt: any, managerId: any) => {
-        await httpJwt.delete(UserAPI.DELETE_MANAGER(managerId), data, {
+    deleteManagerAccount: async (user: any, httpJwt: any, managerId: any) => {
+        await httpJwt.delete(UserAPI.DELETE_MANAGER(managerId), {
             headers: {
                 token: `Bearer ${user.accessToken}`,
             },

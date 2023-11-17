@@ -11,8 +11,8 @@
                 table-layout="fixed"
                 :default-sort="{ prop: 'stt', order: 'ascending' }"
             >
-                <el-table-column label="STT" prop="stt" width="60"></el-table-column>
-                <el-table-column label="Họ tên" prop="username"></el-table-column>
+                <el-table-column label="STT" prop="stt" width="80" sortable></el-table-column>
+                <el-table-column label="Họ tên" prop="username" sortable></el-table-column>
                 <el-table-column label="Email" prop="email" width="250"></el-table-column>
                 <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
                 <el-table-column label="Nơi làm việc" prop="workPlace" width="320"></el-table-column>
@@ -21,7 +21,7 @@
                         <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal(scope.row)"
                             >Sửa</el-button
                         >
-                        <el-button type="danger" size="small" @click="visible = true" plain>Xóa</el-button>
+                        <el-button type="danger" size="small" @click="openDeleteModal(scope.row)" plain>Xóa</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -33,7 +33,7 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Hủy</el-button>
-                <el-button type="danger" @click="visible = false"> Xóa </el-button>
+                <el-button type="danger" :loading="deleteLoading" @click="handleDelete"> Xóa </el-button>
             </span>
         </template>
     </el-dialog>
@@ -49,12 +49,12 @@
         </el-button>
     </div>
 
-    <CreateAccountModal ref="createAccountRef" />
-    <UpdateAccountModal ref="updateAccountRef" />
+    <CreateAccountModal ref="createAccountRef" :table-data="tableData" />
+    <UpdateAccountModal ref="updateAccountRef" :table-data="tableData" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import CreateAccountModal from '@/components/modals/admin/CreateAccountModal.vue';
 import UpdateAccountModal from '@/components/modals/admin/UpdateAccountModal.vue';
 import { UserServices } from '@/services/user/UserServices';
@@ -64,15 +64,49 @@ import type { Account } from '@/interfaces';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import { ElMessage } from 'element-plus';
 
 const tableData = ref<any[]>([]);
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
 const tableLoading = ref<boolean>(false);
+const deleteLoading = ref<boolean>(false);
+const deleteId = ref<string>('');
 
 const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
 const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
+
+const openDeleteModal = (rowData: any) => {
+    deleteId.value = rowData._id;
+    visible.value = true;
+    console.log(deleteId.value);
+};
+
+const handleDelete = async () => {
+    try {
+        deleteLoading.value = true;
+        visible.value = false;
+        await UserServices.deleteManagerAccount(authStore.userInfo, httpJwt, deleteId.value);
+        const index = tableData.value.findIndex((item) => item._id === deleteId.value);
+        if (index !== -1) {
+            tableData.value.splice(index, 1);
+        }
+
+        tableData.value.forEach((item, index) => {
+            item.stt = index + 1;
+        });
+        ElMessage({
+            message: 'Xóa thành công.',
+            type: 'success',
+        });
+    } catch (e) {
+        console.error(e);
+        ElMessage.error('Xóa thất bại.');
+    } finally {
+        deleteLoading.value = false;
+    }
+};
 
 onMounted(async () => {
     try {
@@ -89,8 +123,8 @@ onMounted(async () => {
                 email: account.email,
                 phone: account.phone,
                 workPlace: `${district.name} - ${province.name}`,
-                district: district.name,
-                province: province.name,
+                district: district._id,
+                province: province._id,
                 role: account.role,
             });
         });
