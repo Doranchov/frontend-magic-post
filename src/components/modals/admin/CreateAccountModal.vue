@@ -178,7 +178,7 @@ const handleCreateAccount = async (data: any) => {
         const province = await ProvinceServices.getProvinceById(district.provinceId);
         props.tableData.push({
             _id: res._id,
-            stt: props.tableData.length,
+            stt: props.tableData.length + 1,
             username: res.username,
             email: res.email,
             phone: res.phone,

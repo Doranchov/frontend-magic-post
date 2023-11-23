@@ -4,6 +4,7 @@ import useProvinceStore from '@/stores/useProvinceStore';
 import useDistrictStore from '@/stores/useDistrictStore';
 import type { District } from '@/interfaces/index';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import StarIcon from '@/components/icons/StarIcon.vue';
 
 interface AddressOption {
     label: string;
@@ -42,10 +43,10 @@ onMounted(() => {
 });
 </script>
 <template>
+    <div>
+        <el-image class="background-image" src="src/assets/web-shipping.jpg" />
+    </div>
     <div class="app">
-        <div>
-            <el-image class="background-image" src="src/assets/web-shipping.jpg" />
-        </div>
         <div id="intro">
             <p>TIẾT KIỆM THỜI GIAN VÀ TIỀN BẠC - LÊN TỚI 75% CHO ĐƠN HÀNG ĐẦU TIÊN</p>
             <h1>VẬN CHUYỂN HÀNG HÓA TIN CẬY, NHANH GỌN VÀ TIỆN LỢI!</h1>
@@ -57,10 +58,54 @@ onMounted(() => {
 
     <div class="info">
         <h1>Hàng triệu người tin dùng MagicPost</h1>
+        <div class="star">
+            <StarIcon></StarIcon>
+            <StarIcon></StarIcon>
+            <StarIcon></StarIcon>
+            <StarIcon></StarIcon>
+            <StarIcon></StarIcon>
+        </div>
+        <div class="goodpoint">
+            <el-row :gutter="0">
+                <el-col :span="6" class="GPcol">
+                    <el-image class="GPImage" src="src/assets/feature-fastandeasy.webp"></el-image>
+                    <h3>Nhanh gọn và tiện lợi</h3>
+                    <p>Hoàn thành đơn hàng của bạn chỉ với những thao tác đơn giản</p>
+                </el-col>
+                <el-col :span="6" class="GPcol"
+                    ><el-image class="GPImage" src="src/assets/feature-helpful.png"></el-image>
+                    <h3>Tận tình</h3>
+                    <p>
+                        Bạn cần trợ giúp? Hãy liên lạc ngay với chúng tôi qua email hoặc hotline để được trợ giúp
+                    </p></el-col
+                >
+                <el-col :span="6" class="GPcol"
+                    ><el-image class="GPImage" src="src/assets/feature-prices-1.png"></el-image>
+                    <h3>Tiết kiệm</h3>
+                    <p>
+                        Dịch vụ của của chúng tôi mang lại cước phí tiết kiệm nhất, giá thành rẻ hơn lên tới 70% so với
+                        những dịch vụ vận chuyển thông thường
+                    </p></el-col
+                >
+                <el-col :span="6" class="GPcol"
+                    ><el-image class="GPImage" src="src/assets/feature-trustworthy.webp"></el-image>
+                    <h3>Bảo đảm</h3>
+                    <p>Đơn hàng của bạn luôn được giám sát trên toàn bộ quá trình vận chuyển</p></el-col
+                >
+            </el-row>
+        </div>
     </div>
+    <div><br /><br /><br /><br /></div>
 </template>
 
 <style>
+h3 {
+    margin-top: 15px;
+    font-weight: bold !important;
+}
+p {
+    margin-top: 20px;
+}
 .app {
     position: relative;
     z-index: 0;
@@ -70,7 +115,8 @@ onMounted(() => {
 
 .background-image {
     /* visibility: hidden; */
-    position: fixed;
+    display: inline;
+    position: absolute;
     margin: 0px;
     width: 100%;
     top: 60px;
@@ -81,6 +127,8 @@ onMounted(() => {
 }
 
 #intro {
+    display: inline;
+    position: sticky;
     width: 40.5vw;
     color: whitesmoke;
     float: left;
@@ -104,10 +152,34 @@ onMounted(() => {
     margin: 2vh 0 0 8vw;
 }
 
+.info {
+    margin-top: 45vh;
+}
 .info h1 {
+    font-size: 300%;
     text-align: center;
+    /* position: fixed; */
+    display: block;
+}
+.star {
+    position: relative;
+    width: 180px;
+    margin: 0 auto 40px;
+    padding: 0 20px;
+    height: 24px;
+}
+.goodpoint {
+    text-align: center;
+    padding-left: 13vw;
+    padding-right: 13vw;
+    text-align: left;
+}
 
-    /* position: fixed;
-    display: block; */
+.GPcol {
+    padding: 15px;
+}
+.GPImage {
+    widows: 51;
+    height: 63;
 }
 </style>

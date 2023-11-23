@@ -2,7 +2,7 @@
     <el-header id="header">
         <div class="header-content">
             <template v-if="isLoggedIn">
-                <el-menu class="menu" mode="horizontal" :ellipsis="false" background-color="#fff" menu-trigger="click">
+                <el-menu class="menu" mode="horizontal" :ellipsis="false" menu-trigger="click">
                     <MenuHeader :role="user.role" />
 
                     <div class="flex-grow"></div>
@@ -93,6 +93,6 @@ const handleLogout = (user: any) => {
     margin-left: 8px;
 }
 .menu {
-    color: hidden;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 </style>
