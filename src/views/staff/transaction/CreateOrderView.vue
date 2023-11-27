@@ -28,27 +28,14 @@
                             <el-input v-model="senderUsername" autocomplete="off" type="text" />
                         </el-form-item>
 
-                        <el-form-item label="Địa chỉ">
-                            <el-select v-model="senderAddress" class="m-2" placeholder="Địa chỉ người gửi">
-                                <el-option
-                                    class="address-option"
-                                    v-for="item in district"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                                />
-                            </el-select>
-                        </el-form-item>
-
                         <el-form-item label="Nơi gửi">
-                            <el-select v-model="sendingAddress" class="m-2" placeholder="Nơi gửi hàng">
-                                <el-option
-                                    v-for="item in district"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                                />
-                            </el-select>
+                            <el-cascader
+                                class="comin_place"
+                                placeholder="Nơi gửi hàng"
+                                :options="options"
+                                filterable
+                                @change="handleChange"
+                            />
                         </el-form-item>
                     </el-form>
                 </div>
@@ -82,27 +69,14 @@
                             <el-input v-model="receiverUsername" autocomplete="off" type="text" />
                         </el-form-item>
 
-                        <el-form-item label="Địa chỉ">
-                            <el-select v-model="receiverAddress" class="m-2" placeholder="Địa chỉ người nhận">
-                                <el-option
-                                    class="address-option"
-                                    v-for="item in district"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                                />
-                            </el-select>
-                        </el-form-item>
-
                         <el-form-item label="Nơi nhận">
-                            <el-select v-model="deliveryAddress" class="m-2" placeholder="Nơi nhận hàng">
-                                <el-option
-                                    v-for="item in district"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value"
-                                />
-                            </el-select>
+                            <el-cascader
+                                class="comin_place"
+                                placeholder="Nơi nhận hàng"
+                                :options="options"
+                                filterable
+                                @change="handleChange"
+                            />
                         </el-form-item>
                     </el-form>
                 </div>
@@ -202,8 +176,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, onMounted, ref } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import useDistrictStore from '@/stores/useDistrictStore';
+import useProvinceStore from '@/stores/useProvinceStore';
+import type { District } from '@/interfaces';
 
 const district = [
     {
@@ -268,6 +245,42 @@ const methods = [
         value: 'express',
     },
 ];
+
+interface AddressOption {
+    label: string;
+    value: string;
+    children: District[];
+}
+
+const provinceStore = useProvinceStore();
+const districtStore = useDistrictStore();
+
+const options = ref<AddressOption[]>([]);
+
+const handleChange = (value: any) => {
+    console.log(value[1]);
+};
+
+onBeforeMount(async () => {
+    await provinceStore.getAllProvinces();
+    await districtStore.getAllDistricts();
+    for (const province of provinceStore.provinces) {
+        const childrens: any[] = [];
+        for (const district of districtStore.districts) {
+            if (district.provinceId === province._id) {
+                childrens.push({
+                    value: district._id,
+                    label: district.name,
+                });
+            }
+        }
+        options.value.push({
+            label: province.name,
+            value: province._id,
+            children: childrens,
+        });
+    }
+});
 
 onMounted(() => {
     loadingFullScreen();
