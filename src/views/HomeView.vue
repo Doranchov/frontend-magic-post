@@ -17,6 +17,10 @@ const districtStore = useDistrictStore();
 
 const options = ref<AddressOption[]>([]);
 
+const handleChange = (value: any) => {
+    console.log(value[1]);
+};
+
 onBeforeMount(async () => {
     await provinceStore.getAllProvinces();
     await districtStore.getAllDistricts();
@@ -50,7 +54,14 @@ onMounted(() => {
         <div id="intro">
             <p>TIẾT KIỆM THỜI GIAN VÀ TIỀN BẠC - LÊN TỚI 75% CHO ĐƠN HÀNG ĐẦU TIÊN</p>
             <h1>VẬN CHUYỂN HÀNG HÓA TIN CẬY, NHANH GỌN VÀ TIỆN LỢI!</h1>
-            <el-cascader class="comin_place" placeholder="Địa điểm gửi" :options="options" filterable size="large" />
+            <el-cascader
+                class="comin_place"
+                placeholder="Địa điểm gửi"
+                :options="options"
+                filterable
+                size="large"
+                @change="handleChange"
+            />
             <el-cascader class="recei_place" placeholder="Địa điểm nhận" :options="options" filterable size="large" />
             <el-button class="create" type="warning" round>Khởi tạo đơn hàng</el-button>
         </div>
