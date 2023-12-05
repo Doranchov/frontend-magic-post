@@ -20,21 +20,26 @@
                 </div>
                 <div class="box-content">
                     <el-form label-position="left" label-width="150px">
-                        <el-form-item label="Điện thoại">
-                            <el-input v-model="senderPhone" autocomplete="off" type="text" />
+                        <el-form-item label="Điện thoại" prop="senderPhone">
+                            <el-input
+                                v-model="senderPhone"
+                                autocomplete="off"
+                                type="text"
+                                @change="handleChangeSenderPhone"
+                            />
                         </el-form-item>
 
-                        <el-form-item label="Họ tên người gửi">
+                        <el-form-item label="Họ tên người gửi" prop="senderUsername">
                             <el-input v-model="senderUsername" autocomplete="off" type="text" />
                         </el-form-item>
 
-                        <el-form-item label="Nơi gửi">
+                        <el-form-item label="Nơi gửi" prop="senderAddress">
                             <el-cascader
                                 class="comin_place"
                                 placeholder="Nơi gửi hàng"
                                 :options="options"
                                 filterable
-                                @change="handleChange"
+                                @change="handleChangeSender"
                             />
                         </el-form-item>
                     </el-form>
@@ -61,21 +66,26 @@
                 </div>
                 <div class="box-content">
                     <el-form label-position="left" label-width="150px">
-                        <el-form-item label="Điện thoại">
-                            <el-input v-model="receiverPhone" autocomplete="off" type="text" />
+                        <el-form-item label="Điện thoại" prop="receiverPhone">
+                            <el-input
+                                v-model="receiverPhone"
+                                autocomplete="off"
+                                type="text"
+                                @change="handleChangeReceiverPhone"
+                            />
                         </el-form-item>
 
-                        <el-form-item label="Họ tên người nhận">
+                        <el-form-item label="Họ tên người nhận" prop="receiverUsername">
                             <el-input v-model="receiverUsername" autocomplete="off" type="text" />
                         </el-form-item>
 
-                        <el-form-item label="Nơi nhận">
+                        <el-form-item label="Nơi nhận" prop="receiverAddress">
                             <el-cascader
                                 class="comin_place"
                                 placeholder="Nơi nhận hàng"
                                 :options="options"
                                 filterable
-                                @change="handleChange"
+                                @change="handleChangeReceiver"
                             />
                         </el-form-item>
                     </el-form>
@@ -109,11 +119,11 @@
                 </div>
                 <div class="box-content">
                     <el-form label-position="left" label-width="150px">
-                        <el-form-item label="Tên hàng hóa">
+                        <el-form-item label="Tên hàng hóa" prop="namePackage">
                             <el-input v-model="namePackage" autocomplete="off" type="text" />
                         </el-form-item>
 
-                        <el-form-item label="Trọng lượng">
+                        <el-form-item label="Trọng lượng" prop="weightPackage">
                             <el-input
                                 v-model="weightPackage"
                                 autocomplete="off"
@@ -147,7 +157,7 @@
                 </div>
                 <div class="box-content">
                     <el-form label-position="left" label-width="150px">
-                        <el-form-item label="Phí vận chuyển">
+                        <el-form-item label="Phí vận chuyển" prop="shippingFee">
                             <el-input
                                 v-model="shippingFee"
                                 autocomplete="off"
@@ -157,8 +167,12 @@
                             />
                         </el-form-item>
 
-                        <el-form-item label="Phương thức vận chuyển">
-                            <el-select v-model="shippingMethod" placeholder="Phương thức vận chuyển">
+                        <el-form-item label="Phương thức vận chuyển" prop="shippingMethod">
+                            <el-select
+                                v-model="shippingMethod"
+                                placeholder="Phương thức vận chuyển"
+                                @change="handleChangeMethod"
+                            >
                                 <el-option v-for="item in methods" :label="item.label" :value="item.value" />
                             </el-select>
                         </el-form-item>
@@ -170,7 +184,9 @@
 
     <el-row justify="end">
         <el-col :span="4">
-            <el-button type="primary" size="large">Tạo đơn hàng</el-button>
+            <el-button :loading="createLoading" type="primary" size="large" @click="handleCreatePackage"
+                >Tạo đơn hàng</el-button
+            >
         </el-col>
     </el-row>
 </template>
@@ -181,59 +197,38 @@ import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import useDistrictStore from '@/stores/useDistrictStore';
 import useProvinceStore from '@/stores/useProvinceStore';
 import type { District } from '@/interfaces';
+import { ElMessage } from 'element-plus';
+import { TransactionStaffServices } from '../../../services/user/TransactionStaffServices';
+import useAuthStore from '@/stores/useAuthStore';
+import { createAxiosJwt } from '@/utils/createInstance';
+import { UserServices } from '../../../services/user/UserServices';
+import _DatePicker from 'element-plus/lib/components/date-picker/index.js';
 
-const district = [
-    {
-        label: 'Kim Mã',
-        value: 'Kim Mã',
-    },
-    {
-        label: 'Đống Đa',
-        value: 'Đống Đa',
-    },
-    {
-        label: 'Cầu Giấy',
-        value: 'Cầu Giấy',
-    },
-    {
-        label: 'Thanh Xuân',
-        value: 'Thanh Xuân',
-    },
-];
+interface AddressOption {
+    label: string;
+    value: string;
+    children: District[];
+}
 
-const province = [
-    {
-        label: 'Hà Nội',
-        value: 'Hà Nội',
-    },
-    {
-        label: 'Hải Dương',
-        value: 'Hải Dương',
-    },
-    {
-        label: 'Hải Phòng',
-        value: 'Hải Phòng',
-    },
-    {
-        label: 'Quảng Ninh',
-        value: 'Quảng Ninh',
-    },
-];
+const authStore = useAuthStore();
+const httpJwt = createAxiosJwt(authStore.userInfo);
+
+const createLoading = ref<boolean>(false);
 
 const senderPhone = ref<string>('');
 const senderUsername = ref<string>('');
+const senderId = ref<string>('');
 const senderAddress = ref<string>('');
-const sendingAddress = ref<string>('');
 
 const receiverPhone = ref<string>('');
 const receiverUsername = ref<string>('');
+const receiverId = ref<string>('');
 const receiverAddress = ref<string>('');
-const deliveryAddress = ref<string>('');
 
 const namePackage = ref<string>('');
-const weightPackage = ref<number>();
+const weightPackage = ref<string>('');
 
-const shippingFee = ref<number>();
+const shippingFee = ref<string>('');
 const shippingMethod = ref<string>('');
 const methods = [
     {
@@ -246,19 +241,68 @@ const methods = [
     },
 ];
 
-interface AddressOption {
-    label: string;
-    value: string;
-    children: District[];
-}
-
 const provinceStore = useProvinceStore();
 const districtStore = useDistrictStore();
 
 const options = ref<AddressOption[]>([]);
 
-const handleChange = (value: any) => {
-    console.log(value[1]);
+const handleChangeSender = (value: any) => {
+    senderAddress.value = value[1];
+};
+
+const handleChangeReceiver = (value: any) => {
+    receiverAddress.value = value[1];
+};
+
+const handleChangeMethod = () => {
+    console.log(shippingMethod.value);
+};
+
+const loadPhone = async (id: any, username: any, phone: any) => {
+    try {
+        const res = await UserServices.getUserByPhoneNumber(authStore.userInfo, phone.value, httpJwt);
+        username.value = res.username;
+        id.value = res._id;
+    } catch (e) {
+        console.log(e);
+        ElMessage.error('Không tìm thấy số điện thoại này. Vui lòng nhập lại.');
+    }
+};
+
+const handleChangeSenderPhone = async () => {
+    await loadPhone(senderId, senderUsername, senderPhone);
+};
+
+const handleChangeReceiverPhone = async () => {
+    await loadPhone(receiverId, receiverUsername, receiverPhone);
+};
+
+const handleCreatePackage = async () => {
+    try {
+        createLoading.value = true;
+        const data = {
+            creatorId: authStore.userInfo._id,
+            senderId: senderId.value,
+            receiverId: receiverId.value,
+            name: namePackage.value,
+            weight: weightPackage.value,
+            transactionSendingAddress: senderAddress.value,
+            transactionDeliveryAddress: receiverAddress.value,
+            shippingFee: shippingFee.value,
+            shippingMethod: shippingMethod.value,
+            currentPoint: senderAddress.value,
+        };
+        const res = await TransactionStaffServices.createPackageToReceiver(authStore.userInfo, data, httpJwt);
+        ElMessage({
+            type: 'success',
+            message: 'Tạo gói hàng thành công.',
+        });
+    } catch (err) {
+        console.log(err);
+        ElMessage.error('Tạo gói hàng thất bại.');
+    } finally {
+        createLoading.value = false;
+    }
 };
 
 onBeforeMount(async () => {

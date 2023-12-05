@@ -40,6 +40,8 @@
                         :loading="submitLoading"
                         type="primary"
                         @click="submitForm(loginFormRef)"
+                        @keyup.enter="submitForm(loginFormRef)"
+                        native-type="submit"
                         >Đăng nhập
                     </el-button>
                 </el-form>
@@ -55,8 +57,7 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
-import router from '@/router/index';
-import { ElForm, ElMessage } from 'element-plus';
+import { ElForm } from 'element-plus';
 import useAuthStore from '@/stores/useAuthStore';
 
 const authStore = useAuthStore();
@@ -74,7 +75,7 @@ const login = async (user: any) => {
         submitLoading.value = true;
         await authStore.login(user);
     } catch (e) {
-        ElMessage.error(authStore.error);
+        console.error(e);
     } finally {
         submitLoading.value = false;
     }
@@ -85,8 +86,6 @@ const submitForm = (formEl: typeof ElForm | null) => {
     formEl.validate((valid: any) => {
         if (valid) {
             login(loginForm);
-            loadingFullScreen();
-            router.push({ name: 'home' });
         } else {
             return false;
         }

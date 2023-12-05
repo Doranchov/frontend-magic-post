@@ -1,6 +1,5 @@
 <template>
     <div class="about-us">
-        <span id="abu">About MagicPost</span>
         <div class="spacing"></div>
         <h1>Luôn đặt người dùng lên hàng đầu</h1>
         <div class="spacing"></div>
@@ -27,7 +26,7 @@
             <el-row :gutter="20">
                 <el-col :span="8">
                     <div class="dev">
-                        <el-image class="devpic" src="src/assets/dev.jpg" style="b"></el-image>
+                        <el-image class="devpic" src="@/assets/dev.jpg" style="b"></el-image>
                         <h3>Lê Vũ Minh Nghĩa</h3>
                         <p>
                             Lập trình viên web 20 năm kinh nghiệm, là diễn giả của nhiều cuộc đối thoại về tương lai của
@@ -37,14 +36,14 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="dev">
-                        <el-image class="devpic" src="src/assets/dev.jpg" style="b"></el-image>
+                        <el-image class="devpic" src="@/assets/dev.jpg" style="b"></el-image>
                         <h3>Giang Bảo Minh</h3>
                         <p>Kẻ bú win vĩ đại</p>
                     </div>
                 </el-col>
                 <el-col :span="8">
                     <div class="dev">
-                        <el-image class="devpic" src="src/assets/dev.jpg" style="b"></el-image>
+                        <el-image class="devpic" src="@/assets/dev.jpg" style="b"></el-image>
                         <h3>Trần Thọ Mạnh</h3>
                         <p>
                             3000 rate CodeForce, Sở hữu kênh diutube dạy lập trình hàng đầu thế giới với 50 triệu người

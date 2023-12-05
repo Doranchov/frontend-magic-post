@@ -3,7 +3,12 @@
         <el-row justify="center">
             <el-col :xs="16" :sm="14" :md="12" :lg="8">
                 <h2 class="title">Đăng ký</h2>
-                <el-form label-position="top" :model="registerForm" ref="registerFormRef">
+                <el-form
+                    label-position="top"
+                    :model="registerForm"
+                    ref="registerFormRef"
+                    @submit.native.prevent="submitForm(registerFormRef)"
+                >
                     <el-form-item
                         label="Tên người dùng"
                         prop="username"
@@ -61,11 +66,36 @@
                     >
                         <el-input v-model="registerForm.password" type="password" :show-password="true" />
                     </el-form-item>
+                    <el-form-item
+                        label="Xác nhận mật khẩu"
+                        prop="confirmPassword"
+                        :rules="[
+                            {
+                                required: true,
+                                message: 'Vui lòng xác nhận mật khẩu',
+                                trigger: 'blur',
+                            },
+                            {
+                                validator: (rule: any, value: any, callback: any) => {
+                                    if (value !== registerForm.password) {
+                                        callback('Mật khẩu xác nhận không khớp');
+                                    } else {
+                                        callback();
+                                    }
+                                },
+                                trigger: 'blur',
+                            },
+                        ]"
+                    >
+                        <el-input v-model="registerForm.confirmPassword" type="password" :show-password="true" />
+                    </el-form-item>
                     <el-button
                         class="btn-submit"
                         type="primary"
                         :loading="submitLoading"
                         @click="submitForm(registerFormRef)"
+                        @keyup.enter="submitForm(registerFormRef)"
+                        native-type="submit"
                         >Đăng ký
                     </el-button>
                 </el-form>
@@ -82,7 +112,7 @@
 import { reactive, ref, onMounted } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import router from '@/router/index';
-import { ElForm } from 'element-plus';
+import { ElForm, ElMessage } from 'element-plus';
 import { AuthServices } from '@/services/auth/AuthServices';
 
 const registerFormRef = ref<typeof ElForm | null>(null);
@@ -90,6 +120,7 @@ const registerForm = reactive<any>({
     username: '',
     email: '',
     password: '',
+    confirmPassword: '',
     phone: '',
 });
 const submitLoading = ref<boolean>(false);
@@ -99,8 +130,14 @@ const register = async (user: any) => {
         submitLoading.value = true;
         await AuthServices.register(user);
         console.log('Register successful');
+        ElMessage({
+            type: 'success',
+            message: 'Đăng ký thành công.',
+        });
+        await router.push({ name: 'home' });
     } catch (error) {
         console.error('Register failed: ' + error);
+        ElMessage.error('Đăng ký thất bại. Kiểm tra lại thông tin.');
     } finally {
         submitLoading.value = false;
     }
@@ -112,7 +149,6 @@ const submitForm = (formEl: typeof ElForm | null) => {
         loadingFullScreen();
         if (valid) {
             register(registerForm);
-            router.push({ name: 'login' });
         } else {
             return false;
         }

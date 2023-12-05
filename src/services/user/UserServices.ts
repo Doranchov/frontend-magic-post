@@ -9,6 +9,26 @@ export const UserServices = {
         });
     },
 
+    getUserByPhoneNumber: async (user: any, phoneNumber: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(UserAPI.USER_BY_PHONE(phoneNumber), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data.data;
+    },
+
+    getUserById: async (user: any, userId: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(UserAPI.USER_BY_ID(userId), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data.data;
+    },
+
     // admin role
     getGatheringManager: async (user: any, httpJwt: any) => {
         return (

@@ -2,11 +2,11 @@ import { defineStore } from 'pinia';
 import type { Account } from '@/interfaces';
 import { AuthServices } from '@/services/auth/AuthServices';
 import { ElMessage } from 'element-plus';
+import router from '@/router';
 
 interface AuthState {
     isLoggedIn: boolean;
     userInfo: Account;
-    error: string;
 }
 
 const loggedInData = localStorage.getItem('isLoggedIn');
@@ -32,7 +32,6 @@ const useAuthStore = defineStore({
     state: (): AuthState => ({
         isLoggedIn: isLoggedIn,
         userInfo: userInfo,
-        error: '',
     }),
     getters: {
         getCurrentUser: (state) => state.userInfo,
@@ -41,17 +40,17 @@ const useAuthStore = defineStore({
         async login(user: any) {
             try {
                 const res = await AuthServices.login(user);
-                console.log(res.status);
-                if (res.status === 200) {
-                    this.userInfo = res.data.data;
-                    this.isLoggedIn = true;
-                    this.error = '';
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
-                } else {
-                    this.error = 'Tên email hoặc mật khẩu sai.';
-                }
+                this.userInfo = res.data.data;
+                this.isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userInfo', JSON.stringify(this.userInfo));
+                ElMessage({
+                    type: 'success',
+                    message: 'Đăng nhập thành công.',
+                });
+                await router.push({ name: 'home' });
             } catch (error) {
+                ElMessage.error('Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin đăng nhập.');
                 console.error('fail to sign in ' + error);
             }
         },
@@ -76,8 +75,13 @@ const useAuthStore = defineStore({
                 localStorage.removeItem('isLoggedIn');
                 localStorage.removeItem('userInfo');
                 console.log('logout success');
+                ElMessage({
+                    type: 'success',
+                    message: 'Đăng xuất thành công.',
+                });
             } catch (error) {
                 console.error('fail to log out ' + error);
+                ElMessage.error('Đăng xuất không thành công. Vui lòng thử lại.');
             }
         },
     },

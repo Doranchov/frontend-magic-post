@@ -73,6 +73,7 @@ const handleLogout = (user: any) => {
     position: fixed;
     width: 100%;
     z-index: 12;
+    background-color: #fff;
 }
 
 .flex-grow {

@@ -54,7 +54,7 @@
                                 </el-form-item>
                                 <template v-if="!isCustomer()">
                                     <el-form-item label="Nơi làm việc:">
-                                        <el-input v-model="location" :disabled="true" />
+                                        <el-input v-model="workPlace" :disabled="true" />
                                     </el-form-item>
                                 </template>
                                 <el-form-item label="Số điện thoại:" prop="phone">
@@ -128,7 +128,7 @@ const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
 const districtOptions = ref<any[]>([]);
-const location = ref<string>('Hà Nội');
+const workPlace = ref<string>('');
 const avatar = ref<any | null>();
 const avatarInput = ref<HTMLInputElement | null>(null);
 const isMobile = ref<boolean>(false);
@@ -195,6 +195,9 @@ onMounted(async () => {
     loadingFullScreen();
     window.addEventListener('resize', handleResize);
     role.value = (await RoleServices.getRoleById(user.value.role)).description;
+    const district = await DistrictServices.getDistrictById(authStore.userInfo.workPlace);
+    const province = await ProvinceServices.getProvinceById(district.provinceId);
+    workPlace.value = `${district.name} - ${province.name}`;
     loadProvinces();
     userInfoForm.value = user.value;
     if (user.value.address) {
