@@ -1,6 +1,6 @@
 <template>
     <el-footer id="footer">
-        <div class="footer-content">Footer</div>
+        <div class="footer-content">Copyright © 2023 MagicPost</div>
     </el-footer>
 </template>
 

@@ -126,6 +126,12 @@ const router = createRouter({
                             name: 'staff-transaction-package',
                             component: () => import('@/views/staff/transaction/CreateOrderView.vue'),
                         },
+
+                        {
+                            path: 'store',
+                            name: 'store',
+                            component: () => import('@/views/staff/transaction/GoodsWarehouseView.vue'),
+                        },
                     ],
                 },
 

@@ -1,22 +1,29 @@
 <template>
     <el-dialog v-model="visible" title="Tạo tài khoản cho trưởng điểm" width="40%" top="8vh">
-        <el-form :model="postForm" label-position="top">
-            <el-form-item label="Họ tên">
-                <el-input v-model="username" type="text" />
+        <el-form :model="postForm" label-position="top" ref="postFormRef" :rules="rules">
+            <el-form-item label="Họ tên" prop="username">
+                <el-input v-model="postForm.username" type="text" />
             </el-form-item>
-            <el-form-item label="Email">
-                <el-input v-model="email" type="text" />
+            <el-form-item label="Email" prop="email">
+                <el-input v-model="postForm.email" type="text" />
             </el-form-item>
-            <el-form-item label="Mật khẩu">
-                <el-input v-model="password" type="text" />
+            <el-form-item label="Mật khẩu" prop="password">
+                <el-input v-model="postForm.password" type="text" />
             </el-form-item>
-            <el-form-item label="Số điện thoại">
-                <el-input v-model="phone" type="text" />
+            <el-form-item label="Số điện thoại" prop="phone">
+                <el-input v-model="postForm.phone" type="text" />
             </el-form-item>
-            <el-form-item label="Chức vụ">
-                <el-input v-model="role" type="text" disabled placeholder="Nhân viên điểm tập kết" />
+            <el-form-item label="Chức vụ" prop="role">
+                <el-select v-model="postForm.role" class="m-2" placeholder="Các chức vụ">
+                    <el-option
+                        v-for="(item, index) in roleOptions"
+                        :key="index"
+                        :label="item.label"
+                        :value="item.value"
+                    />
+                </el-select>
             </el-form-item>
-            <el-form-item label="Địa điểm làm việc">
+            <el-form-item label="Địa điểm làm việc" prop="workPlace">
                 <div class="address-option">
                     <el-select
                         placeholder="Chọn tỉnh/thành phố"
@@ -32,7 +39,12 @@
                             :value="item._id"
                         />
                     </el-select>
-                    <el-select placeholder="Chọn quận/huyện" v-model="district" remote :remote-method="loadDistricts">
+                    <el-select
+                        placeholder="Chọn quận/huyện"
+                        v-model="postForm.workPlace"
+                        remote
+                        :remote-method="loadDistricts"
+                    >
                         <el-option
                             v-for="(item, index) in districtOptions"
                             :key="index"
@@ -46,27 +58,100 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Huỷ bỏ</el-button>
-                <el-button type="primary" @click="visible = false"> Tạo mới </el-button>
+                <el-button type="primary" :loading="createLoading" @click="submitForm(postFormRef)">
+                    Tạo mới
+                </el-button>
             </span>
         </template>
     </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Account } from '@/interfaces/index';
+import { reactive, ref, onMounted } from 'vue';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { DistrictServices } from '@/services/district/DistrictServices';
+import Role from '@/constants/roles';
+import { ElMessage, type ElForm, type FormRules } from 'element-plus';
+import { ManagerServices } from '@/services/user/ManagerServices';
+import useAuthStore from '@/stores/useAuthStore';
+import { createAxiosJwt } from '@/utils/createInstance';
 
+const props = defineProps<{
+    callFunction: () => Promise<void>;
+}>();
+
+const authStore = useAuthStore();
+const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
-const postForm = ref<Account>();
-
-const username = ref<string>('');
-const email = ref<string>('');
-const password = ref<string>('');
-const role = ref<string>('');
-const phone = ref<string>('');
-
+const createLoading = ref<boolean>(false);
+const postFormRef = ref<typeof ElForm | null>(null);
+const roleOptions = [
+    {
+        label: 'Nhân viên tại điểm tập kết',
+        value: Role.GATHERING_STAFF_ROLE,
+    },
+    {
+        label: 'Nhân viên tại điểm giao dịch',
+        value: Role.TRANSACTION_STAFF_ROLE,
+    },
+];
+const postForm = ref({
+    username: '',
+    email: '',
+    password: '',
+    phone: '',
+    role: '',
+    workPlace: '',
+});
+const rules = reactive<FormRules>({
+    username: [
+        {
+            required: true,
+            message: 'Vui lòng nhập tên người dùng',
+            trigger: 'blur',
+        },
+    ],
+    email: [
+        {
+            required: true,
+            message: 'Vui lòng nhập email',
+            trigger: 'blur',
+        },
+        {
+            type: 'email',
+            message: 'Vui lòng nhập đúng email',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    password: [
+        {
+            required: true,
+            message: 'Vui lòng nhập mật khẩu',
+            trigger: 'blur',
+        },
+    ],
+    workPlace: [
+        {
+            required: true,
+            message: 'Vui lòng chọn địa chỉ làm việc',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    phone: [
+        {
+            required: true,
+            message: 'Vui lòng nhập số điện thoại',
+            trigger: 'blur',
+        },
+    ],
+    role: [
+        {
+            required: true,
+            message: 'Vui lòng chọn chức vụ',
+            trigger: ['blur', 'change'],
+        },
+    ],
+});
 const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
@@ -86,9 +171,42 @@ const handleChooseProvince = () => {
     loadDistricts(province.value);
 };
 
-async function openModal() {
+function openModal() {
     visible.value = true;
 }
+
+const handleCreateAccount = async (data: any) => {
+    createLoading.value = true;
+    try {
+        const res = await ManagerServices.createStaffAccount(authStore.userInfo, data, httpJwt);
+        visible.value = false;
+        await props.callFunction();
+        ElMessage({
+            message: 'Tạo tài khoản thành công.',
+            type: 'success',
+        });
+    } catch (e) {
+        ElMessage.error('Tạo tài khoản thất bại.');
+        console.error('fail to create manager account ' + e);
+    } finally {
+        createLoading.value = false;
+    }
+};
+
+const submitForm = (formEl: typeof ElForm | null) => {
+    if (!formEl) return;
+    formEl.validate((valid: any) => {
+        if (valid) {
+            handleCreateAccount(postForm.value);
+        } else {
+            return false;
+        }
+    });
+};
+
+onMounted(async () => {
+    await loadProvinces();
+});
 
 defineExpose({
     openModal,

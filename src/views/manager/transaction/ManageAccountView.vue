@@ -2,16 +2,24 @@
     <div class="title-page">
         <h1>Tài Khoản Nhân Viên Giao Dịch</h1>
     </div>
-    <el-table :data="tableData" class="table">
-        <el-table-column label="STT" prop="stt" width="60"></el-table-column>
-        <el-table-column label="Họ tên" prop="username"></el-table-column>
-        <el-table-column label="Email" prop="email" width="250"></el-table-column>
-        <el-table-column label="Mật khẩu" prop="password"></el-table-column>
+    <el-table
+        :data="tableData"
+        v-loading="tableLoading"
+        class="table"
+        :default-sort="{ prop: 'stt', order: 'ascending' }"
+    >
+        <el-table-column label="STT" prop="stt" width="80" sortable></el-table-column>
+        <el-table-column label="Họ tên" prop="username" sortable></el-table-column>
+        <el-table-column label="Email" prop="email"></el-table-column>
+        <el-table-column label="Chức vụ" prop="role"></el-table-column>
         <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
-        <el-table-column label="Nơi làm việc" prop="gathering"></el-table-column>
-        <el-table-column fixed="right" label="Hành động" width="150">
-            <template #default>
-                <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal()">Sửa</el-button>
+        <el-table-column label="Nơi làm việc" prop="workPlace"></el-table-column>
+        <el-table-column label="Ngày tạo" prop="createdAt" sortable></el-table-column>
+        <el-table-column fixed="right" label="Hành động" width="130">
+            <template v-slot="scope" #default>
+                <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal(scope.row)"
+                    >Sửa</el-button
+                >
                 <el-button type="danger" size="small" @click="visible = true" plain>Xóa</el-button>
             </template>
         </el-table-column>
@@ -27,6 +35,16 @@
         </template>
     </el-dialog>
 
+    <div class="pagination">
+        <el-pagination
+            :page-size="10"
+            :pager-count="5"
+            layout="prev, pager, next"
+            :total="totalData"
+            @current-change="handleChangePage"
+        />
+    </div>
+
     <div class="btn-add">
         <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
             <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="" class="icon">
@@ -38,8 +56,8 @@
         </el-button>
     </div>
 
-    <CreateAccountModal ref="createAccountRef" />
-    <UpdateAccountModal ref="updateAccountRef" />
+    <CreateAccountModal ref="createAccountRef" :call-function="() => loadTableData(1)" />
+    <UpdateAccountModal ref="updateAccountRef" :call-function="() => loadTableData(1)" />
 </template>
 
 <script setup lang="ts">
@@ -47,41 +65,60 @@ import { onMounted, ref } from 'vue';
 import CreateAccountModal from '@/components/modals/manager/CreateAccountModal.vue';
 import UpdateAccountModal from '@/components/modals/manager/UpdateAccountModal.vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import { ManagerServices } from '@/services/user/ManagerServices';
+import useAuthStore from '@/stores/useAuthStore';
+import { createAxiosJwt } from '@/utils/createInstance';
+import { DistrictServices } from '@/services/district/DistrictServices';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { checkRole } from '@/helpers/checkRole';
+import { convertDateTime } from '@/helpers/convertDateTime';
 
-const tableData = ref<any[]>([
-    {
-        stt: 1,
-        username: 'Le Nghia',
-        email: 'abc@example.com',
-        password: '123456',
-        phone: '012345678',
-        gathering: 'Hà Nội',
-    },
-    {
-        stt: 2,
-        username: 'Tran Manh',
-        email: 'abc123@example.com',
-        password: '123456',
-        phone: '012345678',
-        gathering: 'Hà Nội',
-    },
-    {
-        stt: 3,
-        username: 'Giang Minh',
-        email: 'abc1234@example.com',
-        password: '123456',
-        phone: '012345678',
-        gathering: 'Hà Nội',
-    },
-]);
-
+const authStore = useAuthStore();
+const httJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
+const tableData = ref<any[]>([]);
+const tableLoading = ref<boolean>(false);
+const totalData = ref<number>(0);
 
 const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
 const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
 
-onMounted(() => {
+const loadTableData = async (page: any) => {
+    tableLoading.value = true;
+    try {
+        tableData.value = [];
+        const res = await ManagerServices.getTransactionStaff(authStore.userInfo, page, httJwt);
+        totalData.value = res.total;
+        res.data.map(async (account: any, index: number) => {
+            const district = await DistrictServices.getDistrictById(account.workPlace);
+            const province = await ProvinceServices.getProvinceById(district.provinceId);
+            tableData.value.push({
+                _id: account._id,
+                stt: index + 1,
+                username: account.username,
+                email: account.email,
+                role: checkRole(account.role),
+                phone: account.phone,
+                workPlace: `${district.name} - ${province.name}`,
+                district: district._id,
+                province: province._id,
+                createdAt: convertDateTime(account.createdAt),
+            });
+        });
+    } catch (e) {
+        console.log(e);
+    } finally {
+        tableLoading.value = false;
+    }
+};
+
+const handleChangePage = async (val: number) => {
+    await loadTableData(val);
+};
+
+onMounted(async () => {
     loadingFullScreen();
+    await loadTableData(1);
 });
 </script>
 
@@ -109,4 +146,9 @@ onMounted(() => {
 .btn {
     float: right;
 }
+
+.pagination {
+    float: right;
+}
 </style>
+@/helpers/checkRole

@@ -42,13 +42,13 @@
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/staff/transaction/create-package')"> Tạo đơn hàng </el-menu-item>
         <el-menu-item index="3" @click="handleRoute('/staff/transaction/goods')"> Xác nhận đơn hàng </el-menu-item>
+        <el-menu-item index="4" @click="handleRoute('/staff/transaction/store')"> Kho hàng </el-menu-item>
     </template>
 
     <template v-else-if="props.role === Role.GATHERING_STAFF_ROLE">
         <el-menu-item @click="handleRoute('/')"> Magic Post </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
-        <el-menu-item index="2" @click="handleRoute('/staff/gathering/create-package')"> Tạo đơn hàng </el-menu-item>
-        <el-menu-item index="3" @click="handleRoute('/staff/gathering/goods')"> Xác nhận đơn hàng </el-menu-item>
+        <el-menu-item index="2" @click="handleRoute('/staff/gathering/goods')"> Xác nhận đơn hàng </el-menu-item>
     </template>
 </template>
 

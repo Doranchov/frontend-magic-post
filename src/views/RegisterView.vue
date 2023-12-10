@@ -2,107 +2,45 @@
     <div class="container">
         <el-row justify="center">
             <el-col :xs="16" :sm="14" :md="12" :lg="8">
-                <h2 class="title">Đăng ký</h2>
-                <el-form
-                    label-position="top"
-                    :model="registerForm"
-                    ref="registerFormRef"
-                    @submit.native.prevent="submitForm(registerFormRef)"
-                >
-                    <el-form-item
-                        label="Tên người dùng"
-                        prop="username"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập tên người dùng',
-                                trigger: 'blur',
-                            },
-                        ]"
-                    >
-                        <el-input v-model="registerForm.username" type="text" />
-                    </el-form-item>
-                    <el-form-item
-                        label="Email"
-                        prop="email"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập email',
-                                trigger: 'blur',
-                            },
-                            {
-                                type: 'email',
-                                message: 'Vui lòng nhập đúng email',
-                                trigger: ['blur', 'change'],
-                            },
-                        ]"
-                    >
-                        <el-input v-model="registerForm.email" type="email" />
-                    </el-form-item>
-                    <el-form-item
-                        label="Số điện thoại"
-                        prop="phone"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập số điện thoại',
-                                trigger: 'blur',
-                            },
-                        ]"
-                    >
-                        <el-input v-model="registerForm.phone" type="text" />
-                    </el-form-item>
-                    <el-form-item
-                        label="Mật khẩu"
-                        prop="password"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập mật khẩu',
-                                trigger: 'blur',
-                            },
-                        ]"
-                    >
-                        <el-input v-model="registerForm.password" type="password" :show-password="true" />
-                    </el-form-item>
-                    <el-form-item
-                        label="Xác nhận mật khẩu"
-                        prop="confirmPassword"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng xác nhận mật khẩu',
-                                trigger: 'blur',
-                            },
-                            {
-                                validator: (rule: any, value: any, callback: any) => {
-                                    if (value !== registerForm.password) {
-                                        callback('Mật khẩu xác nhận không khớp');
-                                    } else {
-                                        callback();
-                                    }
-                                },
-                                trigger: 'blur',
-                            },
-                        ]"
-                    >
-                        <el-input v-model="registerForm.confirmPassword" type="password" :show-password="true" />
-                    </el-form-item>
-                    <el-button
-                        class="btn-submit"
-                        type="primary"
-                        :loading="submitLoading"
-                        @click="submitForm(registerFormRef)"
-                        @keyup.enter="submitForm(registerFormRef)"
-                        native-type="submit"
-                        >Đăng ký
-                    </el-button>
-                </el-form>
-                <span>
-                    Bạn đã có tài khoản?
-                    <router-link to="/login">Đăng nhập</router-link>
-                </span>
+                <el-card>
+                    <template #header>
+                        <h2 class="title">Đăng ký</h2>
+                    </template>
+                    <el-form label-position="top" :model="registerForm" :rules="rules" ref="registerFormRef">
+                        <el-form-item label="Tên người dùng" prop="username">
+                            <el-input v-model="registerForm.username" type="text" />
+                        </el-form-item>
+                        <el-form-item label="Email" prop="email">
+                            <el-input v-model="registerForm.email" type="email" />
+                        </el-form-item>
+                        <el-form-item label="Số điện thoại" prop="phone">
+                            <el-input v-model="registerForm.phone" type="text" />
+                        </el-form-item>
+                        <el-form-item label="Mật khẩu" prop="password">
+                            <el-input v-model="registerForm.password" type="password" :show-password="true" />
+                        </el-form-item>
+                        <el-form-item label="Xác nhận mật khẩu" prop="confirmPassword">
+                            <el-input v-model="registerForm.confirmPassword" type="password" :show-password="true" />
+                        </el-form-item>
+                        <el-form-item>
+                            <div class="action">
+                                <div class="redirect">
+                                    Bạn đã có tài khoản?
+                                    <router-link to="/login" class="to-login">Đăng nhập</router-link>
+                                </div>
+                                <el-button
+                                    class="btn-submit"
+                                    type="primary"
+                                    :loading="submitLoading"
+                                    @click="submitForm(registerFormRef)"
+                                    @keyup.enter="submitForm(registerFormRef)"
+                                    native-type="submit"
+                                    >Đăng ký
+                                </el-button>
+                            </div>
+                        </el-form-item>
+                    </el-form>
+                </el-card>
             </el-col>
         </el-row>
     </div>
@@ -112,9 +50,61 @@
 import { reactive, ref, onMounted } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import router from '@/router/index';
-import { ElForm, ElMessage } from 'element-plus';
+import { ElForm, ElMessage, type FormRules } from 'element-plus';
 import { AuthServices } from '@/services/auth/AuthServices';
 
+const rules = reactive<FormRules<any>>({
+    username: [
+        {
+            required: true,
+            message: 'Vui lòng nhập tên người dùng',
+            trigger: 'blur',
+        },
+    ],
+    email: [
+        {
+            required: true,
+            message: 'Vui lòng nhập email',
+            trigger: 'blur',
+        },
+        {
+            type: 'email',
+            message: 'Vui lòng nhập đúng email',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    phone: [
+        {
+            required: true,
+            message: 'Vui lòng nhập số điện thoại',
+            trigger: 'blur',
+        },
+    ],
+    password: [
+        {
+            required: true,
+            message: 'Vui lòng nhập mật khẩu',
+            trigger: 'blur',
+        },
+    ],
+    confirmPassword: [
+        {
+            required: true,
+            message: 'Vui lòng xác nhận mật khẩu',
+            trigger: 'blur',
+        },
+        {
+            validator: (rule: any, value: any, callback: any) => {
+                if (value !== registerForm.password) {
+                    callback('Mật khẩu xác nhận không khớp');
+                } else {
+                    callback();
+                }
+            },
+            trigger: 'blur',
+        },
+    ],
+});
 const registerFormRef = ref<typeof ElForm | null>(null);
 const registerForm = reactive<any>({
     username: '',
@@ -126,8 +116,8 @@ const registerForm = reactive<any>({
 const submitLoading = ref<boolean>(false);
 
 const register = async (user: any) => {
+    submitLoading.value = true;
     try {
-        submitLoading.value = true;
         await AuthServices.register(user);
         console.log('Register successful');
         ElMessage({
@@ -162,6 +152,21 @@ onMounted(() => {
 <style scoped>
 .title {
     text-align: center;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.redirect {
+    font-size: 16px;
+    width: 200%;
+}
+
+.to-login:hover {
+    text-decoration: underline;
 }
 
 .btn-submit {

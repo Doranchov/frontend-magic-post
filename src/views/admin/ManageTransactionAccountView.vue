@@ -104,9 +104,9 @@ const handleDelete = async () => {
 };
 
 onMounted(async () => {
+    tableLoading.value = true;
     try {
         loadingFullScreen();
-        tableLoading.value = true;
         const res = await UserServices.getTransactionManager(authStore.userInfo, httpJwt);
         res.map(async (account: Account, index: number) => {
             const district = await DistrictServices.getDistrictById(account.workPlace);

@@ -2,53 +2,34 @@
     <div class="container">
         <el-row justify="center">
             <el-col :xs="16" :sm="14" :md="12" :lg="8">
-                <h2 class="title">Đăng nhập</h2>
-                <el-form label-position="top" :model="loginForm" ref="loginFormRef">
-                    <el-form-item
-                        label="Email"
-                        prop="email"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập email',
-                                trigger: 'blur',
-                            },
-                            {
-                                type: 'email',
-                                message: 'Vui lòng nhập đúng email',
-                                trigger: ['blur', 'change'],
-                            },
-                        ]"
-                    >
-                        <el-input v-model="loginForm.email" type="email" />
-                    </el-form-item>
-                    <el-form-item
-                        label="Mật khẩu"
-                        prop="password"
-                        :rules="[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập mật khẩu',
-                                trigger: 'blur',
-                            },
-                        ]"
-                    >
-                        <el-input v-model="loginForm.password" type="password" :show-password="true" />
-                    </el-form-item>
-                    <el-button
-                        class="btn-submit"
-                        :loading="submitLoading"
-                        type="primary"
-                        @click="submitForm(loginFormRef)"
-                        @keyup.enter="submitForm(loginFormRef)"
-                        native-type="submit"
-                        >Đăng nhập
-                    </el-button>
-                </el-form>
-                <span>
-                    Bạn chưa có tài khoản?
-                    <router-link to="/register">Đăng ký</router-link>
-                </span>
+                <el-card>
+                    <template #header><h2 class="title">Đăng nhập</h2></template>
+                    <el-form label-position="top" :model="loginForm" :rules="rules" ref="loginFormRef">
+                        <el-form-item label="Email" prop="email">
+                            <el-input v-model="loginForm.email" type="email" />
+                        </el-form-item>
+                        <el-form-item label="Mật khẩu" prop="password">
+                            <el-input v-model="loginForm.password" type="password" :show-password="true" />
+                        </el-form-item>
+                        <el-form-item>
+                            <div class="action">
+                                <div class="redirect">
+                                    Bạn chưa có tài khoản?
+                                    <router-link to="/register" class="to-register">Đăng ký</router-link>
+                                </div>
+                                <el-button
+                                    class="btn-submit"
+                                    :loading="submitLoading"
+                                    type="primary"
+                                    @click="submitForm(loginFormRef)"
+                                    @keyup.enter="submitForm(loginFormRef)"
+                                    native-type="submit"
+                                    >Đăng nhập
+                                </el-button>
+                            </div>
+                        </el-form-item>
+                    </el-form>
+                </el-card>
             </el-col>
         </el-row>
     </div>
@@ -57,7 +38,7 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
-import { ElForm } from 'element-plus';
+import { ElForm, type FormRules } from 'element-plus';
 import useAuthStore from '@/stores/useAuthStore';
 
 const authStore = useAuthStore();
@@ -67,7 +48,27 @@ const loginForm = reactive({
     email: '',
     password: '',
 });
-
+const rules = reactive<FormRules<any>>({
+    email: [
+        {
+            required: true,
+            message: 'Vui lòng nhập email',
+            trigger: 'blur',
+        },
+        {
+            type: 'email',
+            message: 'Vui lòng nhập đúng email',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    password: [
+        {
+            required: true,
+            message: 'Vui lòng nhập mật khẩu',
+            trigger: 'blur',
+        },
+    ],
+});
 const loginFormRef = ref<typeof ElForm | null>(null);
 
 const login = async (user: any) => {
@@ -103,6 +104,21 @@ onMounted(() => {
 
 .title {
     text-align: center;
+}
+
+.action {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.redirect {
+    font-size: 16px;
+    width: 200%;
+}
+
+.to-register:hover {
+    text-decoration: underline;
 }
 
 .btn-submit {

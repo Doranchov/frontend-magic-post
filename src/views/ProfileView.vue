@@ -3,51 +3,32 @@
         <el-row :justify="isMobile ? 'center' : 'start'">
             <el-col :span="24">
                 <div class="profile-info">
-                    <el-form :model="userInfoForm" label-position="top" class="info-form">
+                    <el-form
+                        :model="userInfoForm"
+                        :rules="rules"
+                        ref="userInfoFormRef"
+                        label-position="top"
+                        class="info-form"
+                    >
                         <el-row :gutter="isMobile ? 0 : 40" justify="space-around">
                             <el-col :span="isMobile ? 24 : 8">
-                                <el-form-item class="avatar-uploader">
+                                <el-form-item class="avatar-uploader" prop="avatar">
                                     <input
                                         type="file"
                                         class="avatar-input"
                                         ref="avatarInput"
                                         @change="handleChangeAvatar"
                                     />
-                                    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                                    <img v-if="imageUrl" :src="imageUrl" class="avatar" alt="anh dai dien" />
                                 </el-form-item>
                                 <h1>Hồ sơ cá nhân</h1></el-col
                             >
                             <el-col :span="isMobile ? 18 : 12" class="user-info">
-                                <el-form-item
-                                    label="Họ tên:"
-                                    prop="username"
-                                    :rules="[
-                                        {
-                                            required: true,
-                                            message: 'Vui lòng nhập tên người dùng',
-                                            trigger: 'blur',
-                                        },
-                                    ]"
-                                >
-                                    <el-input v-model="username" type="text" />
+                                <el-form-item label="Họ tên:" prop="username">
+                                    <el-input v-model="userInfoForm.username" type="text" />
                                 </el-form-item>
-                                <el-form-item
-                                    label="Email:"
-                                    prop="email"
-                                    :rules="[
-                                        {
-                                            required: true,
-                                            message: 'Vui lòng nhập email',
-                                            trigger: 'blur',
-                                        },
-                                        {
-                                            type: 'email',
-                                            message: 'Vui lòng nhập đúng email',
-                                            trigger: ['blur', 'change'],
-                                        },
-                                    ]"
-                                >
-                                    <el-input v-model="email" type="email" />
+                                <el-form-item label="Email:" prop="email">
+                                    <el-input v-model="userInfoForm.email" type="email" />
                                 </el-form-item>
                                 <el-form-item label="Vai trò:" prop="role">
                                     <el-input v-model="role" :disabled="true" />
@@ -58,7 +39,7 @@
                                     </el-form-item>
                                 </template>
                                 <el-form-item label="Số điện thoại:" prop="phone">
-                                    <el-input v-model="phone" type="text" />
+                                    <el-input v-model="userInfoForm.phone" type="text" />
                                 </el-form-item>
                                 <el-form-item label="Địa chỉ:" prop="address">
                                     <div class="address-option">
@@ -78,7 +59,7 @@
                                         </el-select>
                                         <el-select
                                             placeholder="Chọn quận/huyện"
-                                            v-model="district"
+                                            v-model="userInfoForm.address"
                                             remote
                                             :remote-method="loadDistricts"
                                         >
@@ -92,7 +73,12 @@
                                     </div>
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button type="primary" @click="handleSubmit">Lưu lại</el-button>
+                                    <el-button
+                                        type="primary"
+                                        :loading="loadingEdit"
+                                        @click="submitForm(userInfoFormRef)"
+                                        >Lưu lại</el-button
+                                    >
                                 </el-form-item>
                             </el-col>
                         </el-row>
@@ -104,14 +90,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, reactive } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
-import type { Account } from '@/interfaces/index';
 import { RoleServices } from '@/services/role/RoleServices';
 import useAuthStore from '@/stores/useAuthStore';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { UserServices } from '@/services/user/UserServices';
-import { ElMessage } from 'element-plus';
+import { ElForm, ElMessage, type FormRules } from 'element-plus';
 import router from '@/router';
 import { createAxiosJwt } from '@/utils/createInstance';
 import { DistrictServices } from '../services/district/DistrictServices';
@@ -119,20 +104,71 @@ import { DistrictServices } from '../services/district/DistrictServices';
 const authStore = useAuthStore();
 const user = computed(() => authStore.userInfo);
 const httpJwt = createAxiosJwt(authStore.userInfo);
-const userInfoForm = ref<Account | null>(null);
+const loadingEdit = ref(false);
+const userInfoForm = ref<{
+    username: string;
+    email: string;
+    phone: string;
+    address: string;
+    avatar: any | null;
+}>({
+    username: user.value.username,
+    email: user.value.email,
+    phone: user.value.phone,
+    address: '',
+    avatar: null,
+});
+const userInfoFormRef = ref<typeof ElForm | null>(null);
+const rules = reactive<FormRules<any>>({
+    username: [
+        {
+            required: true,
+            message: 'Vui lòng nhập tên người dùng',
+            trigger: 'blur',
+        },
+    ],
+    email: [
+        {
+            required: true,
+            message: 'Vui lòng nhập email',
+            trigger: 'blur',
+        },
+        {
+            type: 'email',
+            message: 'Vui lòng nhập đúng email',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    phone: [
+        {
+            required: true,
+            message: 'Vui lòng nhập số điện thoại',
+            trigger: 'blur',
+        },
+    ],
+    address: [
+        {
+            required: true,
+            message: 'Vui lòng chọn địa chỉ thường trú',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    avatar: [
+        {
+            required: true,
+            message: 'Vui lòng chọn ảnh đại diện',
+            trigger: ['blur', 'change'],
+        },
+    ],
+});
 const imageUrl: string = user.value.avatar;
-const username = ref<string>(user.value.username);
-const email = ref<string>(user.value.email);
-const phone = ref<string>(user.value.phone);
 const province = ref<string>('');
-const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
+const provinceOptions = ref<any[]>([]);
 const districtOptions = ref<any[]>([]);
 const workPlace = ref<string>('');
-const avatar = ref<any | null>();
 const avatarInput = ref<HTMLInputElement | null>(null);
 const isMobile = ref<boolean>(false);
-
 const role = ref<string>('');
 
 const isCustomer = () => {
@@ -149,7 +185,7 @@ const handleResize = () => {
 
 const handleChangeAvatar = () => {
     if (avatarInput.value?.files && avatarInput.value.files[0]) {
-        avatar.value = avatarInput.value.files[0];
+        userInfoForm.value.avatar = avatarInput.value.files[0];
     }
 };
 
@@ -167,16 +203,16 @@ const handleChooseProvince = () => {
     loadDistricts(province.value);
 };
 
-const handleSubmit = async () => {
+const handleSubmit = async (data: any) => {
     const formData = new FormData();
-    formData.append('username', username.value);
-    formData.append('email', email.value);
-    formData.append('phone', phone.value);
-    formData.append('address', district.value);
-    formData.append('avatar', avatar.value);
+    formData.append('username', data.username);
+    formData.append('email', data.email);
+    formData.append('phone', data.phone);
+    formData.append('address', data.address);
+    formData.append('avatar', data.avatar);
+    loadingEdit.value = true;
     try {
         await UserServices.update(user.value, formData, httpJwt);
-        loadingFullScreen();
         ElMessage({
             message: 'Sửa thành công. Bạn cần đăng nhập lại.',
             type: 'success',
@@ -188,22 +224,36 @@ const handleSubmit = async () => {
     } catch (error) {
         console.error('Failed to submit' + error);
         ElMessage.error('Sửa thất bại.');
+    } finally {
+        loadingEdit.value = false;
     }
+};
+
+const submitForm = (formEl: typeof ElForm | null) => {
+    if (!formEl) return;
+    formEl.validate((valid: any) => {
+        if (valid) {
+            handleSubmit(userInfoForm.value);
+        } else {
+            return false;
+        }
+    });
 };
 
 onMounted(async () => {
     loadingFullScreen();
     window.addEventListener('resize', handleResize);
+    await loadProvinces();
     role.value = (await RoleServices.getRoleById(user.value.role)).description;
-    const district = await DistrictServices.getDistrictById(authStore.userInfo.workPlace);
+    const district = await DistrictServices.getDistrictById(authStore.userInfo?.workPlace);
     const province = await ProvinceServices.getProvinceById(district.provinceId);
     workPlace.value = `${district.name} - ${province.name}`;
-    loadProvinces();
-    userInfoForm.value = user.value;
+    userInfoForm.value.username = user.value.username;
+    userInfoForm.value.email = user.value.email;
+    userInfoForm.value.phone = user.value.phone;
     if (user.value.address) {
         const districtResponse = await DistrictServices.getDistrictById(user.value.address);
         district.value = districtResponse.name;
-        console.log(district.value);
         province.value = (await ProvinceServices.getProvinceById(districtResponse.provinceId)).name;
     }
 });

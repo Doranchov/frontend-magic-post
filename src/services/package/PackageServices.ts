@@ -1,6 +1,17 @@
 import { PackageAPI } from '@/api/package/PackageAPI';
 
 export const PackageServices = {
+    // staff transaction
+    getPackageShipping: async (user: any, page: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_SHIPPING(page), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
     getPackageSuccess: async (user: any, page: any, httpJwt: any) => {
         return (
             await httpJwt.get(PackageAPI.LIST_SUCCESS(page), {
@@ -8,7 +19,7 @@ export const PackageServices = {
                     token: `Bearer ${user.accessToken}`,
                 },
             })
-        ).data.data;
+        ).data;
     },
 
     getPackageFail: async (user: any, page: any, httpJwt: any) => {
@@ -18,7 +29,7 @@ export const PackageServices = {
                     token: `Bearer ${user.accessToken}`,
                 },
             })
-        ).data.data;
+        ).data;
     },
 
     getPackageToSend: async (user: any, page: any, httpJwt: any) => {
@@ -41,6 +52,28 @@ export const PackageServices = {
         ).data;
     },
 
+    // staff gathering
+    getPackageToGathering: async (user: any, page: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_DELIVERY_GATHERING(page), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    getPackageFromGathering: async (user: any, page: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_SEND_GATHERING(page), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    // manager transaction
     getPackageFromGatheringInTransactionPoint: async (user: any, page: any, httpJwt: any) => {
         return (
             await httpJwt.get(PackageAPI.LIST_FROM_GATHERING(page), {
@@ -48,6 +81,16 @@ export const PackageServices = {
                     token: `Bearer ${user.accessToken}`,
                 },
             })
-        ).data.data;
+        ).data;
+    },
+
+    getPackageToGatheringInTransactionPoint: async (user: any, page: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_TO_GATHERING(page), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
     },
 };

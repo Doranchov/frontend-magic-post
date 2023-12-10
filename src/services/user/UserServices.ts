@@ -20,6 +20,7 @@ export const UserServices = {
     },
 
     getUserById: async (user: any, userId: any, httpJwt: any) => {
+        console.log(userId);
         return (
             await httpJwt.get(UserAPI.USER_BY_ID(userId), {
                 headers: {

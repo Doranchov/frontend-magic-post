@@ -25,10 +25,10 @@ onBeforeMount(async () => {
     await provinceStore.getAllProvinces();
     await districtStore.getAllDistricts();
     for (const province of provinceStore.provinces) {
-        const childrens: any[] = [];
+        const children: any[] = [];
         for (const district of districtStore.districts) {
             if (district.provinceId === province._id) {
-                childrens.push({
+                children.push({
                     value: district._id,
                     label: district.name,
                 });
@@ -37,7 +37,7 @@ onBeforeMount(async () => {
         options.value.push({
             label: province.name,
             value: province._id,
-            children: childrens,
+            children: children,
         });
     }
 });
@@ -59,10 +59,9 @@ onMounted(() => {
                 placeholder="Địa điểm gửi"
                 :options="options"
                 filterable
-                size="large"
                 @change="handleChange"
             />
-            <el-cascader class="recei_place" placeholder="Địa điểm nhận" :options="options" filterable size="large" />
+            <el-cascader class="recei_place" placeholder="Địa điểm nhận" :options="options" filterable />
             <el-button class="create" type="warning" round>Khởi tạo đơn hàng</el-button>
         </div>
     </div>
