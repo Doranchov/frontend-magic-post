@@ -8,7 +8,7 @@
                 <el-input v-model="postForm.email" type="text" />
             </el-form-item>
             <el-form-item label="Mật khẩu" prop="password">
-                <el-input v-model="postForm.password" type="text" />
+                <el-input v-model="postForm.password" type="password" :show-password="true" />
             </el-form-item>
             <el-form-item label="Số điện thoại" prop="phone">
                 <el-input v-model="postForm.phone" type="text" />
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref } from 'vue';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import Role from '@/constants/roles';
@@ -85,7 +85,7 @@ const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
 const createLoading = ref<boolean>(false);
 const postFormRef = ref<typeof ElForm | null>(null);
-const roleOptions = [
+const roleOptions = ref([
     {
         label: 'Nhân viên tại điểm tập kết',
         value: Role.GATHERING_STAFF_ROLE,
@@ -94,7 +94,7 @@ const roleOptions = [
         label: 'Nhân viên tại điểm giao dịch',
         value: Role.TRANSACTION_STAFF_ROLE,
     },
-];
+]);
 const postForm = ref({
     username: '',
     email: '',
@@ -158,22 +158,32 @@ const district = ref<string>('');
 const districtOptions = ref<any[]>([]);
 
 const loadProvinces = async () => {
-    provinceOptions.value = await ProvinceServices.getAll();
+    provinceOptions.value = [];
+    const res = await DistrictServices.getDistrictById(authStore.userInfo?.workPlace);
+    const resProvince = await ProvinceServices.getProvinceById(res.provinceId);
+    provinceOptions.value.push(resProvince);
 };
 
-const loadDistricts = async (provinceId: any) => {
-    districtOptions.value = await DistrictServices.getDistrictByProvinceId(provinceId);
+const loadDistricts = async () => {
+    districtOptions.value = [];
+    const res = await DistrictServices.getDistrictById(authStore.userInfo?.workPlace);
+    districtOptions.value.push(res);
 };
 
 const handleChooseProvince = () => {
     districtOptions.value = [];
     district.value = '';
-    loadDistricts(province.value);
+    loadDistricts();
 };
 
-function openModal() {
-    visible.value = true;
-}
+const resetForm = (form: any) => {
+    form.username = '';
+    form.email = '';
+    form.password = '';
+    form.phone = '';
+    form.role = '';
+    form.workPlace = '';
+};
 
 const handleCreateAccount = async (data: any) => {
     createLoading.value = true;
@@ -204,9 +214,26 @@ const submitForm = (formEl: typeof ElForm | null) => {
     });
 };
 
-onMounted(async () => {
+async function openModal() {
+    visible.value = true;
     await loadProvinces();
-});
+    if (authStore.userInfo.role === Role.GATHERING_MANAGER_ROLE) {
+        roleOptions.value = [
+            {
+                label: 'Nhân viên tại điểm tập kết',
+                value: Role.GATHERING_STAFF_ROLE,
+            },
+        ];
+    } else if (authStore.userInfo.role === Role.TRANSACTION_MANAGER_ROLE) {
+        roleOptions.value = [
+            {
+                label: 'Nhân viên tại điểm giao dịch',
+                value: Role.TRANSACTION_STAFF_ROLE,
+            },
+        ];
+    }
+    resetForm(postForm.value);
+}
 
 defineExpose({
     openModal,
@@ -217,5 +244,9 @@ defineExpose({
 .address-option {
     display: flex;
     justify-content: space-between;
+}
+
+.el-select + .el-select {
+    margin-left: 20px;
 }
 </style>

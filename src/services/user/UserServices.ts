@@ -31,24 +31,24 @@ export const UserServices = {
     },
 
     // admin role
-    getGatheringManager: async (user: any, httpJwt: any) => {
+    getGatheringManager: async (user: any, page: any, httpJwt: any) => {
         return (
-            await httpJwt.get(UserAPI.LIST_GATHERING_MANAGER_ACCOUNT, {
+            await httpJwt.get(UserAPI.LIST_GATHERING_MANAGER_ACCOUNT(page), {
                 headers: {
                     token: `Bearer ${user.accessToken}`,
                 },
             })
-        ).data.data;
+        ).data;
     },
 
-    getTransactionManager: async (user: any, httpJwt: any) => {
+    getTransactionManager: async (user: any, page: any, httpJwt: any) => {
         return (
-            await httpJwt.get(UserAPI.LIST_TRANSACTION_MANAGER_ACCOUNT, {
+            await httpJwt.get(UserAPI.LIST_TRANSACTION_MANAGER_ACCOUNT(page), {
                 headers: {
                     token: `Bearer ${user.accessToken}`,
                 },
             })
-        ).data.data;
+        ).data;
     },
 
     createManagerAccount: async (user: any, data: any, httpJwt: any) => {

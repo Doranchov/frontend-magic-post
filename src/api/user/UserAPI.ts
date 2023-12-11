@@ -11,7 +11,7 @@ export const UserAPI = {
 
     DELETE_MANAGER: (managerId: any) => `/user/admin/delete/${managerId}`,
 
-    LIST_GATHERING_MANAGER_ACCOUNT: `/user/admin/gathering-manager`,
+    LIST_GATHERING_MANAGER_ACCOUNT: (page: any) => `/user/admin/gathering-manager?page=${page}`,
 
-    LIST_TRANSACTION_MANAGER_ACCOUNT: `/user/admin/transaction-manager`,
+    LIST_TRANSACTION_MANAGER_ACCOUNT: (page: any) => `/user/admin/transaction-manager?page=${page}`,
 };

@@ -43,7 +43,7 @@ export const ManagerServices = {
 
     deleteStaffAccount: async (user: any, staffId: any, httpJwt: any) => {
         return (
-            await httpJwt.delete(ManagerAPI.EDIT_STAFF(staffId), {
+            await httpJwt.delete(ManagerAPI.DELETE_STAFF(staffId), {
                 headers: {
                     token: `Bearer ${user.accessToken}`,
                 },

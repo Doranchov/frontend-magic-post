@@ -11,16 +11,16 @@
         <el-table-column label="STT" prop="stt" width="80" sortable></el-table-column>
         <el-table-column label="Họ tên" prop="username" sortable></el-table-column>
         <el-table-column label="Email" prop="email"></el-table-column>
-        <el-table-column label="Chức vụ" prop="role"></el-table-column>
+        <el-table-column label="Chức vụ" prop="role" width="250"></el-table-column>
         <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
-        <el-table-column label="Nơi làm việc" prop="workPlace"></el-table-column>
+        <el-table-column label="Nơi làm việc" prop="workPlace" width="300"></el-table-column>
         <el-table-column label="Ngày tạo" prop="createdAt" sortable></el-table-column>
         <el-table-column fixed="right" label="Hành động" width="130">
             <template v-slot="scope" #default>
                 <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal(scope.row)"
                     >Sửa</el-button
                 >
-                <el-button type="danger" size="small" @click="visible = true" plain>Xóa</el-button>
+                <el-button type="danger" size="small" @click="openDeleteModal(scope.row)" plain>Xóa</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -30,7 +30,7 @@
         <template #footer>
             <span class="dialog-footer">
                 <el-button @click="visible = false">Hủy</el-button>
-                <el-button type="danger" @click="visible = false"> Xóa </el-button>
+                <el-button type="danger" :loading="deleteLoading" @click="handleDelete"> Xóa </el-button>
             </span>
         </template>
     </el-dialog>
@@ -47,12 +47,7 @@
 
     <div class="btn-add">
         <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
-            <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="" class="icon">
-                <path
-                    fill="currentColor"
-                    d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"
-                ></path>
-            </svg>
+            <PlusIcon />
         </el-button>
     </div>
 
@@ -72,6 +67,8 @@ import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { checkRole } from '@/helpers/checkRole';
 import { convertDateTime } from '@/helpers/convertDateTime';
+import PlusIcon from '@/components/icons/PlusIcon.vue';
+import { ElMessage } from 'element-plus';
 
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
@@ -79,9 +76,34 @@ const tableData = ref<any[]>([]);
 const totalData = ref<number>(0);
 const visible = ref<boolean>(false);
 const tableLoading = ref<boolean>(false);
+const deleteLoading = ref<boolean>(false);
+const deleteId = ref<string>('');
 
 const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
 const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
+
+const openDeleteModal = (rowData: any) => {
+    deleteId.value = rowData._id;
+    visible.value = true;
+};
+
+const handleDelete = async () => {
+    deleteLoading.value = true;
+    try {
+        await ManagerServices.deleteStaffAccount(authStore.userInfo, deleteId.value, httpJwt);
+        visible.value = false;
+        await loadTableData(1);
+        ElMessage({
+            message: 'Xóa thành công.',
+            type: 'success',
+        });
+    } catch (e) {
+        console.error(e);
+        ElMessage.error('Xóa thất bại.');
+    } finally {
+        deleteLoading.value = false;
+    }
+};
 
 const loadTableData = async (page: any) => {
     tableLoading.value = true;
@@ -132,9 +154,6 @@ onMounted(async () => {
 }
 
 .table {
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 .btn-add {

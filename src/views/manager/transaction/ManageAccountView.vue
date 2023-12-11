@@ -47,12 +47,7 @@
 
     <div class="btn-add">
         <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
-            <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" data-v-ea893728="" class="icon">
-                <path
-                    fill="currentColor"
-                    d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 1 1 0 64H544v352a32 32 0 1 1-64 0V544H128a32 32 0 0 1 0-64h352z"
-                ></path>
-            </svg>
+            <PlusIcon />
         </el-button>
     </div>
 
@@ -72,6 +67,7 @@ import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { checkRole } from '@/helpers/checkRole';
 import { convertDateTime } from '@/helpers/convertDateTime';
+import PlusIcon from '@/components/icons/PlusIcon.vue';
 
 const authStore = useAuthStore();
 const httJwt = createAxiosJwt(authStore.userInfo);
@@ -151,4 +147,3 @@ onMounted(async () => {
     float: right;
 }
 </style>
-@/helpers/checkRole

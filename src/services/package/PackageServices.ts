@@ -93,4 +93,25 @@ export const PackageServices = {
             })
         ).data;
     },
+
+    // manager gathering
+    getPackageToGatheringInGatheringPoint: async (user: any, page: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_TO_GATHERING_IN_GATHERING(page), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    getPackageFromGatheringInGatheringPoint: async (user: any, page: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_FROM_GATHERING_IN_GATHERING(page), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
 };

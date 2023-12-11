@@ -20,7 +20,7 @@
         <el-menu-item @click="handleRoute('/')"> Magic Post </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/about')"> Về chúng tôi </el-menu-item>
-        <el-menu-item index="3"> Tra cứu đơn hàng </el-menu-item>
+        <el-menu-item index="3" @click="handleRoute('/search')"> Tra cứu đơn hàng </el-menu-item>
     </template>
 
     <template v-else-if="props.role === Role.TRANSACTION_MANAGER_ROLE">

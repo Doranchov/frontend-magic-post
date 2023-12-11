@@ -104,14 +104,12 @@ const loadingConfirm = ref<boolean>(false);
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
 
-const currentPageSend = ref<number>(1);
 const totalDataSend = ref<number>(0);
 const dataTableSend = ref<any[]>([]);
 const handleChangePageSend = async (val: number) => {
     await getPackageToSend(val);
 };
 
-const currentPageDelivery = ref<number>(1);
 const totalDataDelivery = ref<number>(0);
 const dataTableReceive = ref<any[]>([]);
 const handleChangePageDelivery = async (val: number) => {

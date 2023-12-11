@@ -26,7 +26,7 @@
                 :pager-count="5"
                 layout="prev, pager, next"
                 :total="totalDataSend"
-                @current-change="handleChangePageDelivery"
+                @current-change="handleChangePageSend"
             />
         </div>
     </template>
@@ -114,6 +114,9 @@ const getPackageToSend = async (page: any) => {
         loadingTable.value = false;
     }
 };
+const handleChangePageSend = async (val: any) => {
+    await getPackageToSend(val);
+};
 
 const totalDataDelivery = ref<number>(0);
 const dataTableReceive = ref<any[]>([]);
@@ -172,7 +175,6 @@ const handleChangeRadio = async () => {
 onMounted(async () => {
     loadingFullScreen();
     await getReceivedPackage(1);
-    await getPackageToSend(1);
 });
 </script>
 

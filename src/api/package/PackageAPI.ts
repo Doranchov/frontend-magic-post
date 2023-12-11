@@ -15,4 +15,6 @@ export const PackageAPI = {
     LIST_TO_GATHERING: (page: any) => `/package/manager/transaction/to?page=${page}`,
 
     // manager gathering
+    LIST_FROM_GATHERING_IN_GATHERING: (page: any) => `/package/manager/gathering/from?page=${page}`,
+    LIST_TO_GATHERING_IN_GATHERING: (page: any) => `/package/manager/gathering/to?page=${page}`,
 };

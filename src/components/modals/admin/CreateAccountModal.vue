@@ -77,11 +77,11 @@ import { createAxiosJwt } from '@/utils/createInstance';
 import { ElForm, ElMessage, type FormRules } from 'element-plus';
 
 const props = defineProps<{
-    tableData: any[];
+    callFunction: () => Promise<void>;
 }>();
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
-const postForm = reactive<any>({
+const postForm = ref({
     username: '',
     email: '',
     password: '',
@@ -172,36 +172,21 @@ const handleChooseProvince = () => {
     loadDistricts(province.value);
 };
 
-onMounted(async () => {
-    await loadProvinces();
-});
-
-function openModal() {
-    visible.value = true;
-}
-
-defineExpose({
-    openModal,
-});
+const resetForm = (form: any) => {
+    form.username = '';
+    form.email = '';
+    form.password = '';
+    form.phone = '';
+    form.role = '';
+    form.workPlace = '';
+};
 
 const handleCreateAccount = async (data: any) => {
     createLoading.value = true;
     try {
         const res = await UserServices.createManagerAccount(authStore.userInfo, data, httpJwt);
-        const district = await DistrictServices.getDistrictById(res.workPlace);
-        const province = await ProvinceServices.getProvinceById(district.provinceId);
-        props.tableData.push({
-            _id: res._id,
-            stt: props.tableData.length + 1,
-            username: res.username,
-            email: res.email,
-            phone: res.phone,
-            workPlace: `${district.name} - ${province.name}`,
-            district: district._id,
-            province: province._id,
-            role: res.role,
-        });
         visible.value = false;
+        await props.callFunction();
         ElMessage({
             message: 'Tạo tài khoản thành công.',
             type: 'success',
@@ -218,12 +203,25 @@ const submitForm = (formEl: typeof ElForm | null) => {
     if (!formEl) return;
     formEl.validate((valid: any) => {
         if (valid) {
-            handleCreateAccount(postForm);
+            handleCreateAccount(postForm.value);
         } else {
             return false;
         }
     });
 };
+
+onMounted(async () => {
+    await loadProvinces();
+});
+
+function openModal() {
+    visible.value = true;
+    resetForm(postForm.value);
+}
+
+defineExpose({
+    openModal,
+});
 </script>
 
 <style scoped>

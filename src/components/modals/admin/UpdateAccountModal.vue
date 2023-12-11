@@ -1,17 +1,17 @@
 <template>
     <el-dialog v-model="visible" title="Chỉnh sửa thông tin tài khoản" width="40%" top="8vh">
-        <el-form :model="postForm" label-position="top">
+        <el-form :model="updateForm" label-position="top" :rules="rules">
             <el-form-item label="Họ tên" prop="username">
-                <el-input v-model="username" type="text" />
+                <el-input v-model="updateForm.username" type="text" />
             </el-form-item>
             <el-form-item label="Email" prop="email">
-                <el-input v-model="email" type="text" />
+                <el-input v-model="updateForm.email" type="text" />
             </el-form-item>
             <el-form-item label="Số điện thoại" prop="phone">
-                <el-input v-model="phone" type="text" />
+                <el-input v-model="updateForm.phone" type="text" />
             </el-form-item>
             <el-form-item label="Chức vụ" prop="role">
-                <el-select v-model="role" class="m-2" placeholder="Các chức vụ">
+                <el-select v-model="updateForm.role" class="m-2" placeholder="Các chức vụ">
                     <el-option
                         v-for="(item, index) in roleOptions"
                         :key="index"
@@ -36,7 +36,13 @@
                             :value="item._id"
                         />
                     </el-select>
-                    <el-select placeholder="Chọn quận/huyện" v-model="district" remote :remote-method="loadDistricts">
+                    <el-select
+                        placeholder="Chọn quận/huyện"
+                        v-model="updateForm.workPlace"
+                        remote
+                        :remote-method="loadDistricts"
+                        @change="console.log(updateForm.workPlace)"
+                    >
                         <el-option
                             v-for="(item, index) in districtOptions"
                             :key="index"
@@ -57,23 +63,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import type { Account } from '@/interfaces/index';
+import { ref, onMounted, reactive } from 'vue';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import Role from '@/constants/roles';
-import { RoleServices } from '@/services/role/RoleServices';
 import { UserServices } from '@/services/user/UserServices';
 import useAuthStore from '@/stores/useAuthStore';
 import { createAxiosJwt } from '@/utils/createInstance';
-import { ElMessage } from 'element-plus';
+import { ElMessage, type FormRules } from 'element-plus';
 
 const props = defineProps<{
-    tableData: any[];
+    callFunction: () => Promise<void>;
 }>();
+const authStore = useAuthStore();
+const httpJwt = createAxiosJwt(authStore.userInfo);
 const visible = ref<boolean>(false);
 const updateLoading = ref<boolean>(false);
-const postForm = ref<Account>();
+const updateForm = ref({
+    username: '',
+    email: '',
+    phone: '',
+    role: '',
+    workPlace: '',
+});
 const roleOptions = [
     {
         label: 'Trưởng điểm tại điểm tập kết',
@@ -84,19 +96,52 @@ const roleOptions = [
         value: Role.TRANSACTION_MANAGER_ROLE,
     },
 ];
-
-const username = ref<string>('');
-const email = ref<string>('');
-const role = ref<string>('');
-const phone = ref<string>('');
-
+const rules = reactive<FormRules>({
+    username: [
+        {
+            required: true,
+            message: 'Vui lòng nhập tên người dùng',
+            trigger: 'blur',
+        },
+    ],
+    email: [
+        {
+            required: true,
+            message: 'Vui lòng nhập email',
+            trigger: 'blur',
+        },
+        {
+            type: 'email',
+            message: 'Vui lòng nhập đúng email',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    workPlace: [
+        {
+            required: true,
+            message: 'Vui lòng chọn địa chỉ làm việc',
+            trigger: ['blur', 'change'],
+        },
+    ],
+    phone: [
+        {
+            required: true,
+            message: 'Vui lòng nhập số điện thoại',
+            trigger: 'blur',
+        },
+    ],
+    role: [
+        {
+            required: true,
+            message: 'Vui lòng chọn chức vụ',
+            trigger: ['blur', 'change'],
+        },
+    ],
+});
 const province = ref<string>('');
 const provinceOptions = ref<any[]>([]);
 const district = ref<string>('');
 const districtOptions = ref<any[]>([]);
-
-const authStore = useAuthStore();
-const httpJwt = createAxiosJwt(authStore.userInfo);
 const managerId = ref<string>('');
 
 const loadProvinces = async () => {
@@ -114,37 +159,18 @@ const handleChooseProvince = () => {
 };
 
 const handleUpdate = async () => {
+    updateLoading.value = true;
     try {
-        updateLoading.value = true;
-        visible.value = false;
         const data = {
-            username: username.value,
-            email: email.value,
-            phone: phone.value,
-            workPlace: district.value,
-            role: role.value,
+            username: updateForm.value.username,
+            email: updateForm.value.email,
+            phone: updateForm.value.phone,
+            workPlace: updateForm.value.workPlace,
+            role: updateForm.value.role,
         };
         const res = await UserServices.updateManagerAccount(authStore.userInfo, data, httpJwt, managerId.value);
-        const index = props.tableData.findIndex((item) => item._id === managerId.value);
-        const newDistrict = await DistrictServices.getDistrictById(res.workPlace);
-        const newProvince = await ProvinceServices.getProvinceById(newDistrict.provinceId);
-        if (index !== -1) {
-            props.tableData[index] = {
-                _id: res._id,
-                stt: index + 1,
-                username: res.username,
-                email: res.email,
-                phone: res.phone,
-                workPlace: `${newDistrict.name} - ${newProvince.name}`,
-                district: newDistrict._id,
-                province: newProvince._id,
-                role: res.role,
-            };
-        }
-
-        props.tableData.forEach((item, index) => {
-            item.stt = index + 1;
-        });
+        visible.value = false;
+        await props.callFunction();
         ElMessage({
             message: 'Cập nhật tài khoản thành công.',
             type: 'success',
@@ -158,17 +184,17 @@ const handleUpdate = async () => {
 };
 
 onMounted(async () => {
-    loadProvinces();
+    await loadProvinces();
 });
 
 async function openModal(rowData: any) {
     visible.value = true;
-    username.value = rowData.username;
-    email.value = rowData.email;
-    phone.value = rowData.phone;
+    updateForm.value.username = rowData.username;
+    updateForm.value.email = rowData.email;
+    updateForm.value.phone = rowData.phone;
     province.value = rowData.province;
-    district.value = (await DistrictServices.getDistrictById(rowData.district)).name;
-    role.value = (await RoleServices.getRoleById(rowData.role)).description;
+    updateForm.value.workPlace = (await DistrictServices.getDistrictById(rowData.district)).name;
+    updateForm.value.role = rowData.roleId;
     managerId.value = rowData._id;
 }
 
