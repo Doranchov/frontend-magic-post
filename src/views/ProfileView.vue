@@ -77,6 +77,8 @@
                                         type="primary"
                                         :loading="loadingEdit"
                                         @click="submitForm(userInfoFormRef)"
+                                        @keyup.enter="submitForm(userInfoFormRef)"
+                                        native-type="submit"
                                         >Lưu lại</el-button
                                     >
                                 </el-form-item>
@@ -244,16 +246,18 @@ onMounted(async () => {
     loadingFullScreen();
     window.addEventListener('resize', handleResize);
     await loadProvinces();
-    role.value = (await RoleServices.getRoleById(user.value.role)).description;
-    const district = await DistrictServices.getDistrictById(authStore.userInfo?.workPlace);
-    const province = await ProvinceServices.getProvinceById(district.provinceId);
-    workPlace.value = `${district.name} - ${province.name}`;
     userInfoForm.value.username = user.value.username;
     userInfoForm.value.email = user.value.email;
     userInfoForm.value.phone = user.value.phone;
-    if (user.value.address) {
+    role.value = (await RoleServices.getRoleById(user.value.role)).description;
+    if (role.value !== 'Khách hàng') {
+        const districtRes = await DistrictServices.getDistrictById(authStore.userInfo?.workPlace);
+        const provinceRes = await ProvinceServices.getProvinceById(districtRes.provinceId);
+        workPlace.value = `${districtRes.name} - ${provinceRes.name}`;
+    }
+    if (user.value.address !== '') {
         const districtResponse = await DistrictServices.getDistrictById(user.value.address);
-        district.value = districtResponse.name;
+        userInfoForm.value.address = districtResponse.name;
         province.value = (await ProvinceServices.getProvinceById(districtResponse.provinceId)).name;
     }
 });

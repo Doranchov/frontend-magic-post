@@ -7,22 +7,10 @@
 
                     <div class="flex-grow"></div>
                     <el-menu-item class="no-hover">
-                        <el-dropdown>
-                            <span class="name-user">
-                                <el-avatar :src="user.avatar" />
-                                <span class="avatar">{{ user.username }}</span>
-                            </span>
-
-                            <template #dropdown>
-                                <el-dropdown-menu>
-                                    <el-dropdown-item @click="handleRoute('/profile')">
-                                        Hồ sơ cá nhân
-                                    </el-dropdown-item>
-                                    <el-dropdown-item @click="handleRoute('/settings')"> Cài đặt </el-dropdown-item>
-                                    <el-dropdown-item @click="() => handleLogout(user)"> Đăng xuất </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
+                        <span class="name-user" @click="handleOpenDrawer(user)">
+                            <el-avatar :src="user.avatar" />
+                            <span class="avatar">{{ user.username }}</span>
+                        </span>
                     </el-menu-item>
                 </el-menu>
             </template>
@@ -43,25 +31,33 @@
             </template>
         </div>
     </el-header>
+    <InfoDrawer ref="infoRef" />
 </template>
 
 <script setup lang="ts">
 import MenuHeader from '@/components/menu/MenuHeader.vue';
 import router from '@/router';
 import useAuthStore from '@/stores/useAuthStore';
-import { computed } from 'vue';
-import { loadingFullScreen } from '@/utils/loadingFullScreen';
+import { computed, ref } from 'vue';
 import { createAxiosJwt } from '@/utils/createInstance';
 import { handleRoute } from '@/utils/handleRoute';
+import InfoDrawer from '@/components/drawers/InfoDrawer.vue';
 
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
 const user = computed(() => authStore.userInfo);
+const httpJwt = createAxiosJwt(user.value);
+const infoRef = ref<InstanceType<typeof InfoDrawer> | null>(null);
+
+const handleOpenDrawer = (user: any) => {
+    if (isLoggedIn.value && user) {
+        infoRef.value?.openDrawer(user);
+    }
+    // isCollapse.value = false;
+};
 
 const handleLogout = (user: any) => {
     if (user !== null) {
-        const httpJwt = createAxiosJwt(user);
-        loadingFullScreen();
         authStore.logout(user, httpJwt);
         router.push({ name: 'login' });
     }
@@ -81,7 +77,7 @@ const handleLogout = (user: any) => {
 }
 
 .menu .no-hover:hover {
-    color: #fff !important;
+    color: inherit !important;
     background-color: transparent !important;
 }
 
