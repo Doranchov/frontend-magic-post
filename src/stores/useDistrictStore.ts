@@ -14,8 +14,7 @@ const useProvinceStore = defineStore({
     actions: {
         async getDistrictByProvinceId(provinceId: any) {
             try {
-                const res = await DistrictServices.getDistrictByProvinceId(provinceId);
-                this.districts = res;
+                this.districts = await DistrictServices.getDistrictByProvinceId(provinceId);
             } catch (error) {
                 console.error('failed to get district by province id ' + error);
             }
@@ -23,8 +22,7 @@ const useProvinceStore = defineStore({
 
         async getAllDistricts() {
             try {
-                const res = await DistrictServices.getAll();
-                this.districts = res;
+                this.districts = await DistrictServices.getAll();
             } catch (error) {
                 console.error('failed to get all ' + error);
             }

@@ -17,4 +17,14 @@ export const PackageAPI = {
     // manager gathering
     LIST_FROM_GATHERING_IN_GATHERING: (page: any) => `/package/manager/gathering/from?page=${page}`,
     LIST_TO_GATHERING_IN_GATHERING: (page: any) => `/package/manager/gathering/to?page=${page}`,
+
+    // admin
+    LIST_SEND_GATHERING_ADMIN: (page: any, managerId: any) =>
+        `/package/manager/gathering/to?page=${page}&id=${managerId}`,
+    LIST_DELIVERY_GATHERING_ADMIN: (page: any, managerId: any) =>
+        `/package/manager/gathering/from?page=${page}&id=${managerId}`,
+    LIST_SEND_TRANSACTION_ADMIN: (page: any, managerId: any) =>
+        `/package/manager/transaction/to?page=${page}&id=${managerId}`,
+    LIST_DELIVERY_TRANSACTION_ADMIN: (page: any, managerId: any) =>
+        `/package/manager/transaction/from?page=${page}&id=${managerId}`,
 };

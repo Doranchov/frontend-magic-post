@@ -20,6 +20,7 @@
                                             size="large"
                                             :disabled="model.phone !== ''"
                                             @input="handleChangeText"
+                                            clearable
                                     /></el-form-item>
                                 </el-col>
                                 <span class="or">hoặc</span>
@@ -32,25 +33,25 @@
                                             size="large"
                                             :disabled="model.code !== ''"
                                             @input="handleChangeText"
+                                            clearable
                                         />
                                     </el-form-item>
                                 </el-col>
                             </el-row>
+                            <el-button
+                                class="btn-search"
+                                :loading="searchLoading"
+                                @click="submitForm(searchFormRef)"
+                                @keyup.enter="submitForm(searchFormRef)"
+                                native-type="submit"
+                                type="primary"
+                                >Tìm kiếm đơn</el-button
+                            >
                         </el-form>
                         <div class="info">
                             Mã vận đơn/ mã đơn hàng là mã code theo dõi trên đơn hàng, chứng từ gửi qua MagicPost. Bạn
                             có thể tra cứu theo ví dụ sau: 111111XYZ, 123456ABC, ... <br />Lưu ý: Chỉ nhập 1 trong 2.
                         </div>
-                        <el-button
-                            class="btn-search"
-                            :loading="searchLoading"
-                            @click="submitForm(searchFormRef)"
-                            @keyup.enter="submitForm(searchFormRef)"
-                            native-type="submit"
-                            type="primary"
-                            size="large"
-                            >Tìm kiếm đơn</el-button
-                        >
                     </div>
                 </el-card>
             </div>
@@ -200,12 +201,9 @@ h3 {
     width: 100%;
 }
 
-.search-body {
-    padding-bottom: 20px;
-}
 
 .btn-search {
-    margin-top: 20px;
+    margin-left: 10px;
 }
 
 .info {
@@ -223,8 +221,7 @@ h3 {
     font-weight: 600;
     font-size: 36px;
     line-height: 48px;
-    margin-bottom: 33px;
-    margin: 0;
+    margin: 0 0 33px 0;
     height: 110px;
 }
 

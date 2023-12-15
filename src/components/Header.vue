@@ -6,7 +6,7 @@
                     <MenuHeader :role="user.role" />
 
                     <div class="flex-grow"></div>
-                    <el-menu-item class="no-hover">
+                    <el-menu-item class="no-hover" index="10">
                         <span class="name-user" @click="handleOpenDrawer(user)">
                             <el-avatar :src="user.avatar" />
                             <span class="avatar">{{ user.username }}</span>
@@ -36,30 +36,19 @@
 
 <script setup lang="ts">
 import MenuHeader from '@/components/menu/MenuHeader.vue';
-import router from '@/router';
 import useAuthStore from '@/stores/useAuthStore';
 import { computed, ref } from 'vue';
-import { createAxiosJwt } from '@/utils/createInstance';
 import { handleRoute } from '@/utils/handleRoute';
 import InfoDrawer from '@/components/drawers/InfoDrawer.vue';
 
 const authStore = useAuthStore();
 const isLoggedIn = computed(() => authStore.isLoggedIn);
 const user = computed(() => authStore.userInfo);
-const httpJwt = createAxiosJwt(user.value);
 const infoRef = ref<InstanceType<typeof InfoDrawer> | null>(null);
 
 const handleOpenDrawer = (user: any) => {
     if (isLoggedIn.value && user) {
         infoRef.value?.openDrawer(user);
-    }
-    // isCollapse.value = false;
-};
-
-const handleLogout = (user: any) => {
-    if (user !== null) {
-        authStore.logout(user, httpJwt);
-        router.push({ name: 'login' });
     }
 };
 </script>

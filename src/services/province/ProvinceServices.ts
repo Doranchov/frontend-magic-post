@@ -3,12 +3,10 @@ import { http } from '@/utils/http';
 
 export const ProvinceServices = {
     getAll: async () => {
-        const responseData = (await http.get(ProvinceAPI.LIST)).data.data;
-        return responseData;
+        return (await http.get(ProvinceAPI.LIST)).data.data;
     },
 
     getProvinceById: async (provinceId: any) => {
-        const responseData = (await http.get(ProvinceAPI.PROVINCE_BY_ID(provinceId))).data.data;
-        return responseData;
+        return (await http.get(ProvinceAPI.PROVINCE_BY_ID(provinceId))).data.data;
     },
 };

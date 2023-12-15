@@ -6,7 +6,7 @@
                     <template #header><h2 class="title">Đăng nhập</h2></template>
                     <el-form label-position="top" :model="loginForm" :rules="rules" ref="loginFormRef">
                         <el-form-item label="Email" prop="email">
-                            <el-input v-model="loginForm.email" type="email" />
+                            <el-input v-model="loginForm.email" type="text" clearable />
                         </el-form-item>
                         <el-form-item label="Mật khẩu" prop="password">
                             <el-input v-model="loginForm.password" type="password" :show-password="true" />
@@ -84,9 +84,9 @@ const login = async (user: any) => {
 
 const submitForm = (formEl: typeof ElForm | null) => {
     if (!formEl) return;
-    formEl.validate((valid: any) => {
+    formEl.validate(async (valid: any) => {
         if (valid) {
-            login(loginForm);
+            await login(loginForm);
         } else {
             return false;
         }
@@ -99,9 +99,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container {
-}
-
 .title {
     text-align: center;
 }

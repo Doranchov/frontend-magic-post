@@ -2,15 +2,9 @@
 import { onBeforeMount, ref, onMounted } from 'vue';
 import useProvinceStore from '@/stores/useProvinceStore';
 import useDistrictStore from '@/stores/useDistrictStore';
-import type { District } from '@/interfaces/index';
+import type { AddressOption, District } from '@/interfaces';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import StarIcon from '@/components/icons/StarIcon.vue';
-
-interface AddressOption {
-    label: string;
-    value: string;
-    children: District[];
-}
 
 const provinceStore = useProvinceStore();
 const districtStore = useDistrictStore();
@@ -54,15 +48,28 @@ onMounted(() => {
         <div id="intro">
             <p>TIẾT KIỆM THỜI GIAN VÀ TIỀN BẠC - LÊN TỚI 75% CHO ĐƠN HÀNG ĐẦU TIÊN</p>
             <h1>VẬN CHUYỂN HÀNG HÓA TIN CẬY, NHANH GỌN VÀ TIỆN LỢI!</h1>
-            <el-cascader
-                class="comin_place"
-                placeholder="Địa điểm gửi"
-                :options="options"
-                filterable
-                @change="handleChange"
-            />
-            <el-cascader class="recei_place" placeholder="Địa điểm nhận" :options="options" filterable />
-            <el-button class="create" type="warning" round>Khởi tạo đơn hàng</el-button>
+
+            <div>
+                <el-row justify="center" class="address">
+                    <el-col :span="12">
+                        <el-cascader
+                            class="comin_place"
+                            placeholder="Địa điểm gửi"
+                            :options="options"
+                            filterable
+                            @change="handleChange"
+                        />
+                    </el-col>
+                    <el-col :span="12">
+                        <el-cascader class="recei_place" placeholder="Địa điểm nhận" :options="options" filterable />
+                    </el-col>
+                </el-row>
+            </div>
+            <div>
+                <el-row justify="center" class="address"
+                    ><el-button class="create" type="warning" round>Khởi tạo đơn hàng</el-button></el-row
+                >
+            </div>
         </div>
     </div>
 
@@ -124,10 +131,9 @@ p {
 }
 
 .background-image {
-    /* visibility: hidden; */
     display: inline;
     position: absolute;
-    margin: 0px;
+    margin: 0;
     width: 100%;
     top: 60px;
     left: 0;
@@ -137,13 +143,10 @@ p {
 }
 
 #intro {
-    display: inline;
-    position: sticky;
-    width: 40.5vw;
     color: whitesmoke;
-    float: left;
-    /* display: inline; */
-    margin: 20vh 0 0 58vw;
+    float: right;
+    max-width: 600px;
+    text-align: center;
 }
 #intro h1 {
     font-weight: 750;
@@ -153,13 +156,17 @@ p {
     font-size: small;
     margin-bottom: 10px;
 }
+
+#intro div {
+    display: flex;
+    justify-content: center;
+}
 .recei_place {
     margin-left: 40px;
 }
 .create {
-    width: 18vw;
-    height: 7vh;
-    margin: 2vh 0 0 8vw;
+    width: 12vw;
+    height: 6vh;
 }
 
 .info {
@@ -168,7 +175,6 @@ p {
 .info h1 {
     font-size: 300%;
     text-align: center;
-    /* position: fixed; */
     display: block;
 }
 .star {
@@ -179,7 +185,6 @@ p {
     height: 24px;
 }
 .goodpoint {
-    text-align: center;
     padding-left: 13vw;
     padding-right: 13vw;
     text-align: left;
@@ -190,6 +195,11 @@ p {
 }
 .GPImage {
     widows: 51;
-    height: 63;
+    height: 63px;
+}
+
+.address {
+    max-width: 536px;
+    margin-bottom: 20px;
 }
 </style>

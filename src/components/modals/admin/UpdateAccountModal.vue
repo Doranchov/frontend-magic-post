@@ -168,7 +168,7 @@ const handleUpdate = async () => {
             workPlace: updateForm.value.workPlace,
             role: updateForm.value.role,
         };
-        const res = await UserServices.updateManagerAccount(authStore.userInfo, data, httpJwt, managerId.value);
+        await UserServices.updateManagerAccount(authStore.userInfo, data, httpJwt, managerId.value);
         visible.value = false;
         await props.callFunction();
         ElMessage({

@@ -14,8 +14,7 @@ const useProvinceStore = defineStore({
     actions: {
         async getAllProvinces() {
             try {
-                const res = await ProvinceServices.getAll();
-                this.provinces = res;
+                this.provinces = await ProvinceServices.getAll();
             } catch (error) {
                 console.error('failed to get all ' + error);
             }

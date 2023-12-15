@@ -8,13 +8,13 @@
                     </template>
                     <el-form label-position="top" :model="registerForm" :rules="rules" ref="registerFormRef">
                         <el-form-item label="Tên người dùng" prop="username">
-                            <el-input v-model="registerForm.username" type="text" />
+                            <el-input v-model="registerForm.username" type="text" clearable />
                         </el-form-item>
                         <el-form-item label="Email" prop="email">
-                            <el-input v-model="registerForm.email" type="email" />
+                            <el-input v-model="registerForm.email" type="text" clearable />
                         </el-form-item>
                         <el-form-item label="Số điện thoại" prop="phone">
-                            <el-input v-model="registerForm.phone" type="text" />
+                            <el-input v-model="registerForm.phone" type="text" clearable />
                         </el-form-item>
                         <el-form-item label="Mật khẩu" prop="password">
                             <el-input v-model="registerForm.password" type="password" :show-password="true" />
@@ -135,10 +135,10 @@ const register = async (user: any) => {
 
 const submitForm = (formEl: typeof ElForm | null) => {
     if (!formEl) return;
-    formEl.validate((valid: any) => {
+    formEl.validate(async (valid: any) => {
         loadingFullScreen();
         if (valid) {
-            register(registerForm);
+            await register(registerForm);
         } else {
             return false;
         }

@@ -188,7 +188,7 @@ const resetForm = (form: any) => {
 const handleCreateAccount = async (data: any) => {
     createLoading.value = true;
     try {
-        const res = await ManagerServices.createStaffAccount(authStore.userInfo, data, httpJwt);
+        await ManagerServices.createStaffAccount(authStore.userInfo, data, httpJwt);
         visible.value = false;
         await props.callFunction();
         ElMessage({

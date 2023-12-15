@@ -114,4 +114,45 @@ export const PackageServices = {
             })
         ).data;
     },
+
+    // admin
+    getPackageSendGatheringAdmin: async (user: any, page: any, managerId: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_SEND_GATHERING_ADMIN(page, managerId), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    getPackageDeliveryGatheringAdmin: async (user: any, page: any, managerId: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_DELIVERY_GATHERING_ADMIN(page, managerId), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    getPackageSendTransactionAdmin: async (user: any, page: any, managerId: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_SEND_TRANSACTION_ADMIN(page, managerId), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    getPackageDeliveryTransactionAdmin: async (user: any, page: any, managerId: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(PackageAPI.LIST_DELIVERY_TRANSACTION_ADMIN(page, managerId), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
 };

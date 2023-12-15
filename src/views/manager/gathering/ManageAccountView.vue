@@ -5,22 +5,67 @@
     <el-table
         :data="tableData"
         v-loading="tableLoading"
+        :border="true"
         class="table"
         :default-sort="{ prop: 'stt', order: 'ascending' }"
     >
-        <el-table-column label="STT" prop="stt" width="80" sortable></el-table-column>
-        <el-table-column label="Họ tên" prop="username" sortable></el-table-column>
-        <el-table-column label="Email" prop="email"></el-table-column>
-        <el-table-column label="Chức vụ" prop="role" width="250"></el-table-column>
-        <el-table-column label="Số điện thoại" prop="phone"></el-table-column>
-        <el-table-column label="Nơi làm việc" prop="workPlace" width="300"></el-table-column>
-        <el-table-column label="Ngày tạo" prop="createdAt" sortable></el-table-column>
-        <el-table-column fixed="right" label="Hành động" width="130">
+        <el-table-column label="STT" prop="stt" width="80" sortable :align="'center'"> </el-table-column>
+        <el-table-column label="Họ tên" prop="username" sortable>
+            <template #default="{ row }">
+                <el-popover placement="bottom" :width="200" trigger="click" :content="row.username">
+                    <template #reference
+                        ><el-text truncated> {{ row.username }} </el-text></template
+                    >
+                </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column label="Email" prop="email">
+            <template #default="{ row }">
+                <el-popover placement="bottom" :width="200" trigger="click" :content="row.email">
+                    <template #reference
+                        ><el-text truncated> {{ row.email }} </el-text></template
+                    >
+                </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column label="Chức vụ" prop="role">
+            <template #default="{ row }">
+                <el-popover placement="bottom" :width="230" trigger="click" :content="row.role">
+                    <template #reference
+                        ><el-text truncated> {{ row.role }} </el-text></template
+                    >
+                </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column label="Số điện thoại" prop="phone" width="110" :align="'center'"></el-table-column>
+        <el-table-column label="Nơi làm việc" prop="workPlace">
+            <template #default="{ row }">
+                <el-popover placement="bottom" :width="200" trigger="click" :content="row.workPlace">
+                    <template #reference
+                        ><el-text truncated> {{ row.workPlace }} </el-text></template
+                    >
+                </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column label="Ngày tạo" prop="createdAt" sortable>
+            <template #default="{ row }">
+                <el-popover placement="bottom" :width="200" trigger="click" :content="row.createdAt">
+                    <template #reference
+                        ><el-text truncated> {{ row.createdAt }} </el-text></template
+                    >
+                </el-popover>
+            </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="Hành động" width="130" :align="'center'">
             <template v-slot="scope" #default>
-                <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal(scope.row)"
-                    >Sửa</el-button
-                >
-                <el-button type="danger" size="small" @click="openDeleteModal(scope.row)" plain>Xóa</el-button>
+                <el-tooltip effect="dark" content="Chỉnh sửa tài khoản" placement="bottom">
+                    <el-button type="primary" size="small" plain @click="updateAccountRef?.openModal(scope.row)"
+                        >Sửa</el-button
+                    >
+                </el-tooltip>
+                <el-tooltip effect="dark" content="Xóa tài khoản" placement="bottom">
+                    <el-button type="danger" size="small" @click="openDeleteModal(scope.row)" plain>Xóa</el-button>
+                </el-tooltip>
             </template>
         </el-table-column>
     </el-table>
@@ -46,9 +91,11 @@
     </div>
 
     <div class="btn-add">
-        <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
-            <PlusIcon />
-        </el-button>
+        <el-tooltip effect="dark" content="Tạo tài khoản mới" placement="top">
+            <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
+                <PlusIcon />
+            </el-button>
+        </el-tooltip>
     </div>
 
     <CreateAccountModal ref="createAccountRef" :call-function="() => loadTableData(1)" />
@@ -149,24 +196,20 @@ onMounted(async () => {
     text-align: center;
     margin-bottom: 28px;
 }
-.icon {
-    width: 25px;
-}
 
-.table {
-}
 
 .btn-add {
     width: 90%;
     position: fixed;
     bottom: 80px;
-    left: 0px;
-    right: 0px;
-    margin: 0px auto;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
 }
 
 .btn {
     float: right;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
 }
 
 .pagination {

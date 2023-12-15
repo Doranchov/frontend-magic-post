@@ -7,18 +7,70 @@
     </div>
 
     <template v-if="control === 'send'">
-        <el-table :data="dataTableSend" v-loading="loadingTable" :default-sort="{ prop: 'stt', order: 'ascending' }">
-            <el-table-column prop="stt" label="STT" width="80" sortable></el-table-column>
-            <el-table-column prop="name" label="Tên hàng hóa" sortable></el-table-column>
-            <el-table-column prop="weight" label="Cân nặng" width="90"></el-table-column>
-            <el-table-column prop="sender" label="Người gửi"></el-table-column>
-            <el-table-column prop="receiver" label="Người nhận"></el-table-column>
-            <el-table-column prop="sendingAddress" label="Nơi gửi"></el-table-column>
-            <el-table-column prop="deliveryAddress" label="Nơi nhận"></el-table-column>
-            <el-table-column prop="shippingFee" label="Phí vận chuyển" width="150" sortable></el-table-column>
-            <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="200"></el-table-column>
+        <el-table
+            :data="dataTableSend"
+            :border="true"
+            v-loading="loadingTable"
+            :default-sort="{ prop: 'stt', order: 'ascending' }"
+        >
+            <el-table-column prop="stt" label="STT" width="80" sortable :align="'center'"></el-table-column>
+            <el-table-column prop="name" label="Tên hàng hóa" width="140" sortable>
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.name">
+                        <template #reference
+                            ><el-text truncated> {{ row.name }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="code" label="Mã hàng hóa" width="110"></el-table-column>
+            <el-table-column prop="weight" label="Cân nặng" width="90" :align="'center'"></el-table-column>
+            <el-table-column prop="sender" label="Người gửi">
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.sender">
+                        <template #reference
+                            ><el-text truncated> {{ row.sender }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="receiver" label="Người nhận">
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.receiver">
+                        <template #reference
+                            ><el-text truncated> {{ row.receiver }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sendingAddress" label="Nơi gửi">
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.sendingAddress">
+                        <template #reference
+                            ><el-text truncated> {{ row.sendingAddress }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="deliveryAddress" label="Nơi nhận" sortable>
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.deliveryAddress">
+                        <template #reference
+                            ><el-text truncated> {{ row.deliveryAddress }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column
+                prop="shippingFee"
+                label="Phí gửi"
+                width="100"
+                sortable
+                :align="'center'"
+            ></el-table-column>
+            <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
             <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
-            <el-table-column fixed="right" label="Hành động" width="100">
+            <el-table-column fixed="right" label="Hành động" width="100" :align="'center'">
                 <template #default="scope">
                     <div>
                         <el-button
@@ -47,20 +99,72 @@
     </template>
 
     <template v-if="control === 'receive'">
-        <el-table :data="dataTableReceive" v-loading="loadingTable" :default-sort="{ prop: 'stt', order: 'ascending' }">
-            <el-table-column prop="stt" label="STT" width="80" sortable></el-table-column>
-            <el-table-column prop="name" label="Tên hàng hóa" sortable></el-table-column>
-            <el-table-column prop="weight" label="Cân nặng" width="90"></el-table-column>
-            <el-table-column prop="sender" label="Người gửi"></el-table-column>
-            <el-table-column prop="receiver" label="Người nhận"></el-table-column>
-            <el-table-column prop="sendingAddress" label="Nơi gửi"></el-table-column>
-            <el-table-column prop="deliveryAddress" label="Nơi nhận"></el-table-column>
-            <el-table-column prop="shippingFee" label="Phí vận chuyển" width="150" sortable></el-table-column>
-            <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="200"></el-table-column>
+        <el-table
+            :data="dataTableReceive"
+            :border="true"
+            v-loading="loadingTable"
+            :default-sort="{ prop: 'stt', order: 'ascending' }"
+        >
+            <el-table-column prop="stt" label="STT" width="80" sortable :align="'center'"></el-table-column>
+            <el-table-column prop="name" label="Tên hàng hóa" width="140" sortable>
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.name">
+                        <template #reference
+                            ><el-text truncated> {{ row.name }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="code" label="Mã hàng hóa" width="110"></el-table-column>
+            <el-table-column prop="weight" label="Cân nặng" width="90" :align="'center'"></el-table-column>
+            <el-table-column prop="sender" label="Người gửi">
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.sender">
+                        <template #reference
+                            ><el-text truncated> {{ row.sender }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="receiver" label="Người nhận">
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.receiver">
+                        <template #reference
+                            ><el-text truncated> {{ row.receiver }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="sendingAddress" label="Nơi gửi" sortable>
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.sendingAddress">
+                        <template #reference
+                            ><el-text truncated> {{ row.sendingAddress }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column prop="deliveryAddress" label="Nơi nhận">
+                <template #default="{ row }">
+                    <el-popover placement="bottom" :width="200" trigger="click" :content="row.deliveryAddress">
+                        <template #reference
+                            ><el-text truncated> {{ row.deliveryAddress }} </el-text></template
+                        >
+                    </el-popover>
+                </template>
+            </el-table-column>
+            <el-table-column
+                prop="shippingFee"
+                label="Phí gửi"
+                width="100"
+                sortable
+                :align="'center'"
+            ></el-table-column>
+            <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
             <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
-            <el-table-column fixed="right" label="Xác nhận" width="100">
+            <el-table-column fixed="right" label="Xác nhận" width="100" :align="'center'">
                 <template #default="scope">
-                    <div>
+                    <el-tooltip effect="dark" content="Xác nhận hàng đã đến." placement="bottom">
                         <el-button
                             type="warning"
                             size="small"
@@ -69,7 +173,7 @@
                             @click="handleConfirmPackage(scope.row)"
                             >Xác nhận</el-button
                         >
-                    </div>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -135,6 +239,7 @@ const getReceivedPackage = async (page: any) => {
                 _id: item._id,
                 stt: index + 1,
                 name: item.name,
+                code: item.code,
                 weight: `${item.weight}kg`,
                 sender: sender.username,
                 receiver: receiver.username,
@@ -177,6 +282,7 @@ const getPackageToSend = async (page: any) => {
                 _id: item._id,
                 stt: index + 1,
                 name: item.name,
+                code: item.code,
                 weight: `${item.weight}kg`,
                 sender: sender.username,
                 receiver: receiver.username,
@@ -252,12 +358,10 @@ onMounted(async () => {
 .control-group-btn {
     display: flex;
     justify-content: center;
+    margin-bottom: 20px;
 }
 
 .pagination {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 70px;
+    float: right;
 }
 </style>

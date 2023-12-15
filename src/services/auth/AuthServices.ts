@@ -21,4 +21,14 @@ export const AuthServices = {
     refreshToken: async () => {
         return (await http.post(AuthAPI.REFRESH_TOKEN, {})).data;
     },
+
+    changePassword: async (user: any, data: any, httpJwt: any) => {
+        return (
+            await httpJwt.put(AuthAPI.CHANGE_PASSWORD, data, {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
 };

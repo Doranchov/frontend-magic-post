@@ -8,6 +8,5 @@ export const convertDateTime = (str: any) => {
     const minutes = dateObject.getMinutes();
     const seconds = dateObject.getSeconds();
 
-    const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-    return formattedDate;
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };

@@ -28,16 +28,21 @@
                                     <el-input v-model="userInfoForm.username" type="text" />
                                 </el-form-item>
                                 <el-form-item label="Email:" prop="email">
-                                    <el-input v-model="userInfoForm.email" type="email" />
+                                    <el-input v-model="userInfoForm.email" type="text" />
                                 </el-form-item>
                                 <el-form-item label="Vai trò:" prop="role">
                                     <el-input v-model="role" :disabled="true" />
                                 </el-form-item>
-                                <template v-if="!isCustomer()">
-                                    <el-form-item label="Nơi làm việc:">
-                                        <el-input v-model="workPlace" :disabled="true" />
-                                    </el-form-item>
-                                </template>
+                                <el-button
+                                    type="primary"
+                                    link
+                                    class="change-pass"
+                                    @click="changePasswordRef?.openModal()"
+                                    >Thay đổi mật khẩu</el-button
+                                >
+                                <el-form-item label="Nơi làm việc:" v-if="!isCustomer()">
+                                    <el-input v-model="workPlace" :disabled="true" />
+                                </el-form-item>
                                 <el-form-item label="Số điện thoại:" prop="phone">
                                     <el-input v-model="userInfoForm.phone" type="text" />
                                 </el-form-item>
@@ -89,6 +94,7 @@
             </el-col>
         </el-row>
     </div>
+    <ChangePasswordModal ref="changePasswordRef" />
 </template>
 
 <script lang="ts" setup>
@@ -101,12 +107,14 @@ import { UserServices } from '@/services/user/UserServices';
 import { ElForm, ElMessage, type FormRules } from 'element-plus';
 import router from '@/router';
 import { createAxiosJwt } from '@/utils/createInstance';
-import { DistrictServices } from '../services/district/DistrictServices';
+import { DistrictServices } from '@/services/district/DistrictServices';
+import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue';
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.userInfo);
 const httpJwt = createAxiosJwt(authStore.userInfo);
 const loadingEdit = ref(false);
+const changePasswordRef = ref<InstanceType<typeof ChangePasswordModal>>();
 const userInfoForm = ref<{
     username: string;
     email: string;
@@ -174,11 +182,7 @@ const isMobile = ref<boolean>(false);
 const role = ref<string>('');
 
 const isCustomer = () => {
-    if (role.value === 'Khách hàng') {
-        return true;
-    } else {
-        return false;
-    }
+    return role.value === 'Khách hàng';
 };
 
 const handleResize = () => {
@@ -304,6 +308,10 @@ h1 {
 
 .user-info {
     margin-bottom: 50px;
+}
+
+.change-pass {
+    margin-bottom: 18px;
 }
 
 @media only screen and (max-width: 992px) {

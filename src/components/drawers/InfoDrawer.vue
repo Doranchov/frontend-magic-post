@@ -13,8 +13,14 @@ const userInfo = ref<any>();
 function openDrawer(user: any) {
     visible.value = true;
     userInfo.value = user;
-    console.log(visible.value);
 }
+
+const handleClick = (path: any) => {
+    if (path) {
+        handleRoute(path);
+    }
+    visible.value = false;
+};
 
 const logout = async (user: any) => {
     if (user !== null) {
@@ -35,8 +41,8 @@ defineExpose({
             <span class="avatar">{{ userInfo?.username }}</span>
         </div>
         <el-menu mode="vertical" :ellipsis="false" class="menu-bar" menu-trigger="click">
-            <el-menu-item @click="handleRoute('/profile')"> Hồ sơ cá nhân </el-menu-item>
-            <el-menu-item @click="handleRoute('/settings')"> Cài đặt </el-menu-item>
+            <el-menu-item @click="handleClick('/profile')"> Hồ sơ cá nhân </el-menu-item>
+            <el-menu-item @click="handleClick('/settings')"> Cài đặt </el-menu-item>
             <el-menu-item @click="logout"> Đăng xuất </el-menu-item>
             <el-menu-item @click="visible = false"> Đóng </el-menu-item>
         </el-menu>
@@ -48,6 +54,10 @@ defineExpose({
     border: none;
 }
 
+.avatar-image {
+    width: auto;
+}
+
 .name-user {
     display: flex;
     align-items: center;
@@ -56,5 +66,6 @@ defineExpose({
 
 .avatar {
     margin-left: 8px;
+    width: 75%;
 }
 </style>

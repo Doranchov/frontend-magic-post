@@ -12,13 +12,6 @@ export interface Account {
     workPlace: string;
 }
 
-export interface Role {
-    _id: string;
-    code: string;
-    description: string;
-    accounts: any[];
-}
-
 export interface Token {
     _id: string;
     admin: boolean;
@@ -38,4 +31,10 @@ export interface Province {
     name: string;
     code: string;
     districts: any[];
+}
+
+export interface AddressOption {
+    label: string;
+    value: string;
+    children: District[];
 }

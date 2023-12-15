@@ -5,7 +5,7 @@
                 <el-input v-model="postForm.username" type="text" />
             </el-form-item>
             <el-form-item label="Email:" prop="email">
-                <el-input v-model="postForm.email" type="email" />
+                <el-input v-model="postForm.email" type="text" />
             </el-form-item>
             <el-form-item label="Mật khẩu" prop="password">
                 <el-input v-model="postForm.password" type="password" :show-password="true" />
@@ -184,7 +184,7 @@ const resetForm = (form: any) => {
 const handleCreateAccount = async (data: any) => {
     createLoading.value = true;
     try {
-        const res = await UserServices.createManagerAccount(authStore.userInfo, data, httpJwt);
+        await UserServices.createManagerAccount(authStore.userInfo, data, httpJwt);
         visible.value = false;
         await props.callFunction();
         ElMessage({

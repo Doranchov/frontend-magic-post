@@ -3,4 +3,5 @@ export const AuthAPI = {
     REGISTER: `auth/register`,
     LOGOUT: `auth/logout`,
     REFRESH_TOKEN: `auth/refresh`,
+    CHANGE_PASSWORD: `auth/change-password`,
 };

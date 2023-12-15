@@ -104,11 +104,6 @@ const router = createRouter({
                             component: () => import('@/views/staff/gathering/OrderStats.vue'),
                         },
 
-                        {
-                            path: 'create-package',
-                            name: 'staff-gathering-package',
-                            component: () => import('@/views/staff/gathering/CreateOrderView.vue'),
-                        },
                     ],
                 },
 

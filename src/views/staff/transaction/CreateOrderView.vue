@@ -177,7 +177,6 @@ import { onBeforeMount, onMounted, reactive, ref } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import useDistrictStore from '@/stores/useDistrictStore';
 import useProvinceStore from '@/stores/useProvinceStore';
-import type { District } from '@/interfaces';
 import { ElForm, ElMessage, type FormRules } from 'element-plus';
 import { TransactionStaffServices } from '@/services/user/TransactionStaffServices';
 import useAuthStore from '@/stores/useAuthStore';
@@ -360,34 +359,36 @@ const resetForm = (form: any) => {
     form.shippingMethod = '';
 };
 
-const handleCreatePackage = async (data: any) => {
-    createLoading.value = true;
-    try {
-        const postData = {
-            creatorId: authStore.userInfo._id,
-            senderId: senderId.value,
-            receiverId: receiverId.value,
-            name: data.namePackage,
-            weight: data.weightPackage,
-            transactionSendingAddress: data.senderAddress,
-            transactionDeliveryAddress: data.receiverAddress,
-            shippingFee: data.shippingFee,
-            shippingMethod: data.shippingMethod,
-            currentPoint: data.senderAddress,
-        };
-        const res = await TransactionStaffServices.createPackageToReceiver(authStore.userInfo, postData, httpJwt);
-        resetForm(data);
-        ElMessage({
-            type: 'success',
-            message: 'Tạo gói hàng thành công.',
-        });
-    } catch (err) {
-        console.log(err);
-        ElMessage.error('Tạo gói hàng thất bại.');
-    } finally {
-        createLoading.value = false;
+const handleCreatePackage = async (data: any) =>
+    {
+        createLoading.value = true;
+        try {
+            const postData = {
+                creatorId: authStore.userInfo._id,
+                senderId: senderId.value,
+                receiverId: receiverId.value,
+                name: data.namePackage,
+                weight: data.weightPackage,
+                transactionSendingAddress: data.senderAddress,
+                transactionDeliveryAddress: data.receiverAddress,
+                shippingFee: data.shippingFee,
+                shippingMethod: data.shippingMethod,
+                currentPoint: data.senderAddress,
+            };
+            await TransactionStaffServices.createPackageToReceiver(authStore.userInfo, postData, httpJwt);
+            resetForm(data);
+            ElMessage({
+                type: 'success',
+                message: 'Tạo gói hàng thành công.',
+            });
+        } catch (err) {
+            console.log(err);
+            ElMessage.error('Tạo gói hàng thất bại.');
+        } finally {
+            createLoading.value = false;
+        }
     }
-};
+;
 
 const submitForm = (formEl: any[]) => {
     let isValid = true;
