@@ -1,11 +1,14 @@
 <template>
     <div class="common-layout">
         <el-container>
-            <Header />
+            <el-header><Header /></el-header>
+
             <el-main id="main">
                 <router-view></router-view>
             </el-main>
-            <Footer />
+            <el-footer>
+                <Footer />
+            </el-footer>
         </el-container>
     </div>
 </template>
@@ -18,6 +21,6 @@ import Footer from '@/components/Footer.vue';
 <style scoped>
 #main {
     max-width: 100%;
-    margin: 60px 0 0;
+    margin: 0;
 }
 </style>
