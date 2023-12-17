@@ -72,7 +72,7 @@ import XIcon from '@/components/icons/XIcon.vue';
     max-width: 100%;
     align-content: center;
     /* background-color: rgb(245, 245, 245) !important; */
-    /* height: 500px; */
+    height: 400px;
 }
 
 .locate {
