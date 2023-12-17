@@ -58,7 +58,7 @@ const handleOpenDrawer = (user: any) => {
     position: fixed;
     width: 100%;
     z-index: 12;
-    background-color: #fff;
+    background-color: #rgb(255, 255, 255, 0.5);
 }
 
 .flex-grow {
