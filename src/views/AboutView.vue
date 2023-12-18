@@ -99,4 +99,8 @@ h3 {
 p {
     text-align: left;
 }
+
+.dev {
+    text-align: center;
+}
 </style>

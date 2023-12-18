@@ -91,6 +91,7 @@ onMounted(async () => {
 <style scoped>
 .card {
     margin-bottom: 20px;
+    min-width: 640px;
 }
 .header {
     display: flex;

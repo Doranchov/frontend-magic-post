@@ -1,6 +1,11 @@
 import { PackageAPI } from '@/api/package/PackageAPI';
+import { http } from '@/utils/http';
 
 export const PackageServices = {
+    getPackageById: async (packageId: any) => {
+        return (await http.get(PackageAPI.PACKAGE_BY_ID(packageId))).data.data;
+    },
+
     // staff transaction
     getPackageShipping: async (user: any, page: any, httpJwt: any) => {
         return (

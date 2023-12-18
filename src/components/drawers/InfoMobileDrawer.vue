@@ -53,6 +53,10 @@ defineExpose({
     border: none;
 }
 
+.avatar-image {
+    width: auto;
+}
+
 .name-user {
     display: flex;
     align-items: center;
@@ -61,5 +65,6 @@ defineExpose({
 
 .avatar {
     margin-left: 8px;
+    width: 75%;
 }
 </style>

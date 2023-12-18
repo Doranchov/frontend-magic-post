@@ -12,8 +12,8 @@
 </template>
 <style>
 .location-icon {
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     margin-right: 10px;
 }
 </style>

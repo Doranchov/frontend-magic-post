@@ -5,7 +5,7 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            component: () => import('@/layouts/DefaultLayout.vue'),
+            component: () => import('@/layouts/CommonLayout.vue'),
             children: [
                 // home page
                 {
@@ -14,6 +14,19 @@ const router = createRouter({
                     component: () => import('@/views/HomeView.vue'),
                 },
 
+                // about page
+
+                {
+                    path: 'about',
+                    name: 'about',
+                    component: () => import('@/views/AboutView.vue'),
+                },
+            ],
+        },
+        {
+            path: '/',
+            component: () => import('@/layouts/DefaultLayout.vue'),
+            children: [
                 // admin routes
                 {
                     path: 'admin/gathering',
@@ -103,7 +116,6 @@ const router = createRouter({
                             name: 'staff-gathering-goods',
                             component: () => import('@/views/staff/gathering/OrderStats.vue'),
                         },
-
                     ],
                 },
 
@@ -130,27 +142,11 @@ const router = createRouter({
                     ],
                 },
 
-                // about page
-
-                {
-                    path: 'about',
-                    name: 'about',
-                    component: () => import('@/views/AboutView.vue'),
-                },
-
                 //profile page
                 {
                     path: 'profile',
                     name: 'profile',
                     component: () => import('@/views/ProfileView.vue'),
-                },
-
-                //settings page
-
-                {
-                    path: 'settings',
-                    name: 'setting',
-                    component: () => import('@/views/SettingView.vue'),
                 },
 
                 // register page
@@ -166,6 +162,13 @@ const router = createRouter({
                     path: 'login',
                     name: 'login',
                     component: () => import('@/views/LoginView.vue'),
+                },
+
+                // print page
+                {
+                    path: 'print/:packageId',
+                    name: 'print',
+                    component: () => import('@/views/PrintView.vue'),
                 },
             ],
         },

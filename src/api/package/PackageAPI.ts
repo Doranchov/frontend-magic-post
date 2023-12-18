@@ -1,4 +1,6 @@
 export const PackageAPI = {
+    PACKAGE_BY_ID: (packageId: any) => `/package/${packageId}`,
+
     // staff transaction
     LIST_SHIPPING: (page: any) => `/package/staff/transaction/shipping?page=${page}`,
     LIST_SUCCESS: (page: any) => `/package/staff/transaction/success?page=${page}`,

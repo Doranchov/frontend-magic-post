@@ -7,43 +7,39 @@ import YoutubeIcon from '@/components/icons/YoutubeIcon.vue';
 import XIcon from '@/components/icons/XIcon.vue';
 </script>
 <template>
-    <el-footer class="container">
-        <div>
+    <div id="footer" class="container">
+        <!-- <div>
             <el-image src="src/assets//logo_name.png" style="height: 200px"></el-image>
-        </div>
-        <el-row :gutter="20">
-            <el-col :span="9">
+        </div> -->
+        <el-row :gutter="20" justify="center" class="row">
+            <el-col :span="6" class="col">
                 <div><h2>Địa chỉ</h2></div>
-                <div class="locate">
-                    <LocationIcon></LocationIcon>Văn phòng chính: 144 Xuân Thủy, Dịch Vọng Hậu, Cầu Giấy, Hà Nội
+                <div class="info-footer">
+                    <LocationIcon />Văn phòng chính: 144 Xuân Thủy, Dịch Vọng Hậu, Cầu Giấy, Hà Nội
                 </div>
-                <el-row :gutter="20">
-                    <el-col :span="12">
-                        Email:
-                        <div><MailIcon></MailIcon>Contact@MagicPost.com</div>
-                    </el-col>
-                    <el-col :span="12"
-                        >Điện thoại:
-                        <div><PhoneIcon></PhoneIcon>1900 9981</div></el-col
-                    >
-                </el-row>
+                <div class="info-footer">
+                    <MailIcon />
+                    Email: magicpost@gmail.com
+                </div>
+                <div class="info-footer"><PhoneIcon />Điện thoại: 0325875898</div>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6" class="col">
                 <el-row> <h2>Về Magic Post</h2> </el-row>
-                <el-row><a href="#"> Giới thiệu </a></el-row>
-                <el-row><a href="#"> Mạng lưới bưu cục </a></el-row>
-                <el-row><a href="#"> FAQ </a></el-row>
+                <el-row> Giới thiệu </el-row>
+                <el-row> Mạng lưới bưu cục </el-row>
+                <el-row> FAQ </el-row>
             </el-col>
-            <el-col :span="5">
+            <el-col :span="6" class="col">
                 <el-row> <h2>Hỗ trợ khách hàng</h2> </el-row>
-                <el-row><a href="#"> Chính sách bảo mật </a></el-row>
-                <el-row><a href="#"> Chính sách vận chuyển</a></el-row>
-                <el-row><a href="#"> Chính sách khiếu nại </a></el-row>
-                <el-row><a href="#"> Quy định vật phẩm cấm </a></el-row>
+                <el-row> Chính sách bảo mật </el-row>
+                <el-row> Chính sách vận chuyển</el-row>
+                <el-row> Chính sách khiếu nại </el-row>
+                <el-row> Quy định vật phẩm cấm </el-row>
             </el-col>
-            <el-col :span="5"
+            <el-col :span="6" class="col"
                 ><h2>Liên hệ ngay</h2>
                 <el-row><h2>1900 9981</h2></el-row>
+                <div>Hãy theo dõi MagicPost trên các kênh mạng xã hội để cập nhật các thông tin mới nhất</div>
                 <el-row :gutter="0">
                     <el-col :span="4">
                         <div>
@@ -63,16 +59,16 @@ import XIcon from '@/components/icons/XIcon.vue';
                 </el-row>
             </el-col>
         </el-row>
-    </el-footer>
+    </div>
 </template>
 
 <style scoped>
 .container {
-    /* margin-top: auto; */
-    max-width: 100%;
-    align-content: center;
-    /* background-color: rgb(245, 245, 245) !important; */
-    height: 400px;
+    padding-top: 2.5rem;
+    padding-left: 13vw;
+    padding-right: 13vw;
+    background-color: #000;
+    color: #fff;
 }
 
 .locate {
@@ -83,5 +79,19 @@ a {
 }
 el-row {
     border: 1px solid black !important;
+}
+
+.row {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.col {
+    padding: 15px;
+}
+
+.info-footer {
+    display: flex;
+    align-items: center;
 }
 </style>

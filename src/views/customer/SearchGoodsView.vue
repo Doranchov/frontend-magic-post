@@ -201,7 +201,6 @@ h3 {
     width: 100%;
 }
 
-
 .btn-search {
     margin-left: 10px;
 }
@@ -221,7 +220,6 @@ h3 {
     font-weight: 600;
     font-size: 36px;
     line-height: 48px;
-    margin: 0 0 33px 0;
     height: 110px;
 }
 

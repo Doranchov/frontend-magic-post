@@ -3,8 +3,8 @@
         <el-header class="header">
             <div class="logo">Magic Post</div>
             <div class="qrcode">
-                <div><qrcode-vue value="2311306CVL" :size="40" level="H" /></div>
-                <div>2311306CVL</div>
+                <div><qrcode-vue :value="packageRes.code" :size="40" level="H" /></div>
+                <div>{{ packageRes.code }}</div>
             </div>
         </el-header>
         <table>
@@ -13,24 +13,24 @@
                     <div class="bold title">1. Người gửi</div>
                     <div>
                         <span class="bold">Họ tên: </span>
-                        <span>Tran Manh</span>
+                        <span>{{ sender.username }}</span>
                     </div>
                     <div>
                         <span class="bold">Địa chỉ gửi: </span>
-                        <span>Ba Đình - Hà Nội</span>
+                        <span>{{ senderAddress.address }}</span>
                     </div>
                     <div>
                         <span class="bold">Điện thoại: </span>
-                        <span>0123456789</span>
+                        <span>{{ sender.phone }}</span>
                     </div>
                     <div class="uuid">
                         <span>
                             <span class="bold">Mã khách hàng: </span>
-                            <span>12osadkqw91k</span>
+                            <span>{{ sender._id }}</span>
                         </span>
                         <span>
                             <span class="bold">Mã bưu chính: </span>
-                            <span>12osadkqw91k</span>
+                            <span>{{ senderAddress._id }}</span>
                         </span>
                     </div>
                 </th>
@@ -38,24 +38,24 @@
                     <div class="bold title">2. Người nhận</div>
                     <div>
                         <span class="bold">Họ tên: </span>
-                        <span>Tran Manh</span>
+                        <span>{{ receiver.username }}</span>
                     </div>
                     <div>
                         <span class="bold">Địa chỉ gửi: </span>
-                        <span>Ba Đình - Hà Nội</span>
+                        <span>{{ receiverAddress.address }}</span>
                     </div>
                     <div>
                         <span class="bold">Điện thoại: </span>
-                        <span>0123456789</span>
+                        <span>{{ receiver.phone }}</span>
                     </div>
                     <div class="uuid">
                         <span>
                             <span class="bold">Mã khách hàng: </span>
-                            <span>12osadkqw91k</span>
+                            <span>{{ receiver._id }}</span>
                         </span>
                         <span>
                             <span class="bold">Mã bưu chính: </span>
-                            <span>12osadkqw91k</span>
+                            <span>{{ receiverAddress._id }}</span>
                         </span>
                     </div>
                 </th>
@@ -64,21 +64,21 @@
                 <td>
                     <div>
                         <span class="bold title">3. Tên hàng gửi: </span>
-                        <span>Rau</span>
+                        <span>{{ packageRes.name }}</span>
                     </div>
                     <div>
                         <span class="bold title">4. Khối lượng: </span>
-                        <span>5kg</span>
+                        <span>{{ packageRes.weight }}kg</span>
                     </div>
                 </td>
                 <td>
                     <div>
                         <span class="bold title">5. Phí vận chuyển: </span>
-                        <span>50000đ</span>
+                        <span>{{ packageRes.shippingFee }}đ</span>
                     </div>
                     <div>
                         <span class="bold title">6. Phương thức vận chuyển: </span>
-                        <span>Vận chuyển tiêu chuẩn</span>
+                        <span>{{ shippingMethod }}</span>
                     </div>
                 </td>
             </tr>
@@ -94,7 +94,7 @@
                         <span class="bold title">8. Ngày giờ gửi: </span>
                         <span class="bold title">Chữ ký người gửi</span>
                     </div>
-                    <div class="time">7:45 12/12/2023</div>
+                    <div class="time">{{ convertDateTime(packageRes.createdAt) }}</div>
                 </td>
                 <td class="sign">
                     <div class="receiver-sign">
@@ -113,17 +113,69 @@
             Hotline: 0325875898 - Website: www.magicpost.com.vn - Email: magicpost@gmail.com
         </el-footer>
     </div>
-    <el-button @click="handlePrint(data)">click</el-button>
+    <div class="print">
+        <el-button class="btn-print" type="primary" @click="handlePrint(data)">In biên lai</el-button>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { loadingFullScreen } from '@/utils/loadingFullScreen';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import QrcodeVue from 'qrcode.vue';
+import { useRoute } from 'vue-router';
+import { PackageServices } from '@/services/package/PackageServices';
+import { convertDateTime } from '@/helpers/convertDateTime';
+import useAuthStore from '@/stores/useAuthStore';
+import { createAxiosJwt } from '@/utils/createInstance';
+import { UserServices } from '@/services/user/UserServices';
+import { DistrictServices } from '@/services/district/DistrictServices';
+import { ProvinceServices } from '@/services/province/ProvinceServices';
+import { PointServices } from '@/services/point/PointServices';
 
+const authStore = useAuthStore();
+const httpJwt = createAxiosJwt(authStore.userInfo);
 const data = ref<any | null>(null);
+const route = useRoute();
+const packageRes = ref({
+    _id: '',
+    name: '',
+    code: '',
+    weight: '',
+    senderId: '',
+    receiverId: '',
+    transactionSendingAddress: '',
+    transactionDeliveryAddress: '',
+    shippingFee: '',
+    shippingMethod: '',
+    createdAt: '',
+});
+const shippingMethod = computed(() => {
+    if (packageRes.value.shippingMethod === 'fast') {
+        return 'Vận chuyển nhanh';
+    } else {
+        return 'Vận chuyển tiêu chuẩn';
+    }
+});
+const sender = ref({
+    _id: '',
+    username: '',
+    phone: '',
+});
+const receiver = ref({
+    _id: '',
+    username: '',
+    phone: '',
+});
+const senderAddress = ref({
+    _id: '',
+    address: '',
+});
+const receiverAddress = ref({
+    _id: '',
+    address: '',
+});
 
 const handlePrint = (ref: any) => {
     html2canvas(ref).then((canvas) => {
@@ -134,8 +186,32 @@ const handlePrint = (ref: any) => {
     });
 };
 
-onMounted(() => {
+onMounted(async () => {
     loadingFullScreen();
+    packageRes.value = await PackageServices.getPackageById(route.params.packageId);
+    sender.value = await UserServices.getUserById(authStore.userInfo, packageRes.value.senderId, httpJwt);
+    receiver.value = await UserServices.getUserById(authStore.userInfo, packageRes.value.receiverId, httpJwt);
+
+    const transactionPointSend = await PointServices.getTransactionPointByLocation(
+        packageRes.value.transactionSendingAddress,
+    );
+    const transactionPointDelivery = await PointServices.getTransactionPointByLocation(
+        packageRes.value.transactionDeliveryAddress,
+    );
+    const districtSend = await DistrictServices.getDistrictById(packageRes.value.transactionSendingAddress);
+    const provinceSend = await ProvinceServices.getProvinceById(districtSend.provinceId);
+    const districtDelivery = await DistrictServices.getDistrictById(packageRes.value.transactionDeliveryAddress);
+    const provinceDelivery = await ProvinceServices.getProvinceById(districtDelivery.provinceId);
+
+    senderAddress.value = {
+        _id: transactionPointSend._id,
+        address: `${districtSend.name} - ${provinceSend.name}`,
+    };
+
+    receiverAddress.value = {
+        _id: transactionPointDelivery._id,
+        address: `${districtDelivery.name} - ${provinceDelivery.name}`,
+    };
 });
 </script>
 
@@ -171,6 +247,7 @@ th {
     display: flex;
     justify-content: space-around;
     margin-bottom: 12px;
+    margin-top: 12px;
 }
 
 .footer {
@@ -217,5 +294,15 @@ th {
 
 .qrcode {
     text-align: center;
+}
+
+.print {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-print {
+    float: right;
 }
 </style>

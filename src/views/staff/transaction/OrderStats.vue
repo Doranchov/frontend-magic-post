@@ -70,7 +70,7 @@
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
             <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
-            <el-table-column fixed="right" label="Hành động" width="100" :align="'center'">
+            <el-table-column fixed="right" label="Hành động" width="130" :align="'center'">
                 <template #default="scope">
                     <div>
                         <el-button
@@ -82,6 +82,16 @@
                             @click="handleSendPackageToGathering(scope.row)"
                             >Gửi</el-button
                         >
+                        <el-tooltip effect="dark" content="In biên lai" placement="bottom">
+                            <el-button
+                                type="primary"
+                                size="small"
+                                plain
+                                @click="handleRoute(`/print/${scope.row._id}`)"
+                            >
+                                <PrinterIcon />
+                            </el-button>
+                        </el-tooltip>
                     </div>
                 </template>
             </el-table-column>
@@ -200,6 +210,8 @@ import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { TransactionStaffServices } from '@/services/user/TransactionStaffServices';
 import { ElMessage } from 'element-plus';
+import PrinterIcon from '@/components/icons/PrinterIcon.vue';
+import { handleRoute } from '@/utils/handleRoute';
 
 const control = ref<string>('receive');
 const loadingTable = ref<boolean>(false);
