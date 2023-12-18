@@ -163,13 +163,13 @@
         </el-col>
     </el-row>
 
-    <el-row justify="end">
-        <el-col :span="4">
+    <div class="btn-create">
+        <div style="float: right">
             <el-button :loading="createLoading" type="primary" size="large" @click="submitForm(postFormRefs)"
                 >Tạo đơn hàng</el-button
             >
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -359,37 +359,34 @@ const resetForm = (form: any) => {
     form.shippingMethod = '';
 };
 
-const handleCreatePackage = async (data: any) =>
-    {
-        createLoading.value = true;
-        try {
-            const postData = {
-                creatorId: authStore.userInfo._id,
-                senderId: senderId.value,
-                receiverId: receiverId.value,
-                name: data.namePackage,
-                weight: data.weightPackage,
-                transactionSendingAddress: data.senderAddress,
-                transactionDeliveryAddress: data.receiverAddress,
-                shippingFee: data.shippingFee,
-                shippingMethod: data.shippingMethod,
-                currentPoint: data.senderAddress,
-            };
-            await TransactionStaffServices.createPackageToReceiver(authStore.userInfo, postData, httpJwt);
-            resetForm(data);
-            ElMessage({
-                type: 'success',
-                message: 'Tạo gói hàng thành công.',
-            });
-        } catch (err) {
-            console.log(err);
-            ElMessage.error('Tạo gói hàng thất bại.');
-        } finally {
-            createLoading.value = false;
-        }
+const handleCreatePackage = async (data: any) => {
+    createLoading.value = true;
+    try {
+        const postData = {
+            creatorId: authStore.userInfo._id,
+            senderId: senderId.value,
+            receiverId: receiverId.value,
+            name: data.namePackage,
+            weight: data.weightPackage,
+            transactionSendingAddress: data.senderAddress,
+            transactionDeliveryAddress: data.receiverAddress,
+            shippingFee: data.shippingFee,
+            shippingMethod: data.shippingMethod,
+            currentPoint: data.senderAddress,
+        };
+        await TransactionStaffServices.createPackageToReceiver(authStore.userInfo, postData, httpJwt);
+        resetForm(data);
+        ElMessage({
+            type: 'success',
+            message: 'Tạo gói hàng thành công.',
+        });
+    } catch (err) {
+        console.log(err);
+        ElMessage.error('Tạo gói hàng thất bại.');
+    } finally {
+        createLoading.value = false;
     }
-;
-
+};
 const submitForm = (formEl: any[]) => {
     let isValid = true;
     for (const formRef of formEl) {
@@ -470,5 +467,13 @@ onMounted(() => {
 
 .el-row + .el-row {
     margin-top: 20px;
+}
+
+.btn-create {
+    width: 86.5%;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 20px auto;
 }
 </style>

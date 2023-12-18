@@ -90,9 +90,11 @@
     </el-dialog>
 
     <div class="btn-add">
-        <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
-            <PlusIcon />
-        </el-button>
+        <el-tooltip effect="dark" content="Tạo tài khoản mới" placement="top">
+            <el-button type="primary" circle size="large" class="btn" @click="createAccountRef?.openModal()">
+                <PlusIcon />
+            </el-button>
+        </el-tooltip>
     </div>
 
     <CreateAccountModal ref="createAccountRef" :call-function="() => loadTableData(1)" />
