@@ -17,7 +17,7 @@
         <template v-else>
             <el-menu class="menu" mode="horizontal" :ellipsis="false" background-color="#fff" menu-trigger="click">
                 <el-menu-item class="no-hover">
-                    <el-image src="@/assets/logo.png" style="height: 100%" />
+                    <el-image src="src/assets/logo.png" style="height: 100%" />
                 </el-menu-item>
                 <el-menu-item @click="handleRoute('/')" index="1"> Trang chủ </el-menu-item>
                 <el-menu-item @click="handleRoute('/about')" index="2"> Về chúng tôi </el-menu-item>

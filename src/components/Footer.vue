@@ -5,6 +5,7 @@ import LocationIcon from '@/components/icons/LocationIcon.vue';
 import FacebookIcon from '@/components/icons/FacebookIcon.vue';
 import YoutubeIcon from '@/components/icons/YoutubeIcon.vue';
 import XIcon from '@/components/icons/XIcon.vue';
+import { handleRoute } from '@/utils/handleRoute';
 </script>
 <template>
     <div id="footer" class="container">
@@ -25,7 +26,7 @@ import XIcon from '@/components/icons/XIcon.vue';
             </el-col>
             <el-col :span="6" class="col">
                 <el-row> <h2>Về Magic Post</h2> </el-row>
-                <el-row> Giới thiệu </el-row>
+                <el-row @click="handleRoute('/about')"> Giới thiệu </el-row>
                 <el-row> Mạng lưới bưu cục </el-row>
                 <el-row> FAQ </el-row>
             </el-col>

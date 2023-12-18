@@ -1,7 +1,7 @@
 <template>
     <template v-if="props.role === Role.ADMIN_ROLE" background-color="#fff">
         <el-menu-item @click="handleRoute('/')">
-            <el-image src="@/assets/logo.png" style="height: 100%"></el-image>
+            <el-image src="src/assets/logo.png" style="height: 100%"></el-image>
         </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-sub-menu index="2">
@@ -21,7 +21,7 @@
 
     <template v-else-if="props.role === Role.CUSTOMER_ROLE" background-color="#fff">
         <el-menu-item @click="handleRoute('/')">
-            <el-image src="@/assets/logo.png" style="height: 100%"></el-image>
+            <el-image src="src/assets/logo.png" style="height: 100%"></el-image>
         </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/about')"> Về chúng tôi </el-menu-item>
@@ -30,7 +30,7 @@
 
     <template v-else-if="props.role === Role.TRANSACTION_MANAGER_ROLE">
         <el-menu-item @click="handleRoute('/')">
-            <el-image src="@/assets/logo.png" style="height: 100%"></el-image>
+            <el-image src="src/assets/logo.png" style="height: 100%"></el-image>
         </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/manage/transaction/account')"> Quản lý tài khoản </el-menu-item>
@@ -39,7 +39,7 @@
 
     <template v-else-if="props.role === Role.GATHERING_MANAGER_ROLE">
         <el-menu-item @click="handleRoute('/')">
-            <el-image src="@/assets/logo.png" style="height: 100%"></el-image>
+            <el-image src="src/assets/logo.png" style="height: 100%"></el-image>
         </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/manage/gathering/account')"> Quản lý tài khoản </el-menu-item>
@@ -48,7 +48,7 @@
 
     <template v-else-if="props.role === Role.TRANSACTION_STAFF_ROLE">
         <el-menu-item @click="handleRoute('/')">
-            <el-image src="@/assets/logo.png" style="height: 100%"></el-image>
+            <el-image src="src/assets/logo.png" style="height: 100%"></el-image>
         </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/staff/transaction/create-package')"> Tạo đơn hàng </el-menu-item>
@@ -58,7 +58,7 @@
 
     <template v-else-if="props.role === Role.GATHERING_STAFF_ROLE">
         <el-menu-item @click="handleRoute('/')">
-            <el-image src="@/assets/logo.png" style="height: 100%"></el-image>
+            <el-image src="src/assets/logo.png" style="height: 100%"></el-image>
         </el-menu-item>
         <el-menu-item index="1" @click="handleRoute('/')"> Trang chủ </el-menu-item>
         <el-menu-item index="2" @click="handleRoute('/staff/gathering/goods')"> Xác nhận đơn hàng </el-menu-item>
