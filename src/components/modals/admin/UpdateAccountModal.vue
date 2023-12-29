@@ -25,8 +25,7 @@
                     <el-select
                         placeholder="Chọn tỉnh/thành phố"
                         v-model="province"
-                        remote
-                        :remote-method="loadProvinces"
+                        filterable
                         @change="handleChooseProvince"
                     >
                         <el-option
@@ -39,8 +38,7 @@
                     <el-select
                         placeholder="Chọn quận/huyện"
                         v-model="updateForm.workPlace"
-                        remote
-                        :remote-method="loadDistricts"
+                        filterable
                         @change="console.log(updateForm.workPlace)"
                     >
                         <el-option

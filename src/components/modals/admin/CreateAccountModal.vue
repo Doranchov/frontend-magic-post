@@ -28,8 +28,7 @@
                     <el-select
                         placeholder="Chọn tỉnh/thành phố"
                         v-model="province"
-                        remote
-                        :remote-method="loadProvinces"
+                        filterable
                         @change="handleChooseProvince"
                     >
                         <el-option
@@ -39,12 +38,7 @@
                             :value="item._id"
                         />
                     </el-select>
-                    <el-select
-                        placeholder="Chọn quận/huyện"
-                        v-model="postForm.workPlace"
-                        remote
-                        :remote-method="loadDistricts"
-                    >
+                    <el-select placeholder="Chọn quận/huyện" v-model="postForm.workPlace" filterable>
                         <el-option
                             v-for="(item, index) in districtOptions"
                             :key="index"

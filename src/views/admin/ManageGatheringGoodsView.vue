@@ -7,9 +7,27 @@
     </div>
 
     <template v-if="control === 'send'">
-        <el-select v-model="valueSend" class="m-2" placeholder="Chọn nơi tập kết" @change="handleChangeValueSend">
+        <el-select
+            v-model="valueSend"
+            class="m-2"
+            placeholder="Chọn nơi tập kết"
+            filterable
+            @change="handleChangeValueSend"
+        >
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableSend"
             :border="true"
@@ -81,7 +99,22 @@
                 :align="'center'"
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
-            <el-table-column prop="status" label="Trạng thái" width="120" sortable :align="'center'"></el-table-column>
+            <el-table-column prop="status" label="Trạng thái" width="120" sortable :align="'center'">
+                <template v-slot="scope" #default>
+                    <el-button
+                        link
+                        :type="
+                            scope.row.status === 'Thành công'
+                                ? 'success'
+                                : scope.row.status === 'Thất bại'
+                                ? 'danger'
+                                : 'warning'
+                        "
+                    >
+                        {{ scope.row.status }}
+                    </el-button>
+                </template>
+            </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
@@ -95,9 +128,27 @@
     </template>
 
     <template v-if="control === 'receive'">
-        <el-select v-model="valueReceive" class="m-2" placeholder="Chọn nơi tập kết" @change="handleChangeValueReceive">
+        <el-select
+            v-model="valueReceive"
+            class="m-2"
+            placeholder="Chọn nơi tập kết"
+            filterable
+            @change="handleChangeValueReceive"
+        >
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableReceive"
             :border="true"
@@ -169,7 +220,22 @@
                 :align="'center'"
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
-            <el-table-column prop="status" label="Trạng thái" width="120" sortable :align="'center'"></el-table-column>
+            <el-table-column prop="status" label="Trạng thái" width="120" sortable :align="'center'">
+                <template v-slot="scope" #default>
+                    <el-button
+                        link
+                        :type="
+                            scope.row.status === 'Thành công'
+                                ? 'success'
+                                : scope.row.status === 'Thất bại'
+                                ? 'danger'
+                                : 'warning'
+                        "
+                    >
+                        {{ scope.row.status }}
+                    </el-button>
+                </template>
+            </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
@@ -193,6 +259,8 @@ import { UserServices } from '@/services/user/UserServices';
 import { DistrictServices } from '@/services/district/DistrictServices';
 import { ProvinceServices } from '@/services/province/ProvinceServices';
 import { PointServices } from '@/services/point/PointServices';
+import { CustomerServices } from '@/services/user/CustomerServices';
+import { ElMessage } from 'element-plus';
 
 const control = ref<string>('receive');
 const authStore = useAuthStore();
@@ -205,12 +273,15 @@ const valueReceive = ref<string>('');
 const currentSendGathering = ref<string>('');
 const currentDeliveryGathering = ref<string>('');
 
+const searchCode = ref<string>('');
+const searchLoading = ref<boolean>(false);
+
 const options = ref<any[]>([]);
 const dataTableSend = ref<any[]>([]);
 const dataTableReceive = ref<any[]>([]);
 
 const handleChangeRadio = () => {
-    // console.log(control.value);
+    searchCode.value = '';
 };
 
 const handleChangeValueSend = async (value: any) => {
@@ -316,6 +387,105 @@ const getReceivedPackage = async (page: any, location: any) => {
     }
 };
 
+const handleSearch = async () => {
+    searchLoading.value = true;
+    loadingTable.value = true;
+    try {
+        if (control.value === 'receive') {
+            dataTableReceive.value = [];
+            let res;
+            if (searchCode.value !== '') {
+                res = await CustomerServices.getPackageByCode(authStore.userInfo, searchCode.value, httpJwt);
+            }
+            if (res.total === 0) {
+                ElMessage({
+                    type: 'warning',
+                    message: 'Không tìm thấy !',
+                });
+            }
+            totalDataDelivery.value = res.total;
+            res.data.map(async (item: any, index: number) => {
+                const sender = await UserServices.getUserById(authStore.userInfo, item.senderId, httpJwt);
+                const receiver = await UserServices.getUserById(authStore.userInfo, item.receiverId, httpJwt);
+                const creator = await UserServices.getUserById(authStore.userInfo, item.creatorId, httpJwt);
+                const districtSend = await DistrictServices.getDistrictById(item.transactionSendingAddress);
+                const provinceSend = await ProvinceServices.getProvinceById(districtSend.provinceId);
+                const districtDelivery = await DistrictServices.getDistrictById(item.transactionDeliveryAddress);
+                const provinceDelivery = await ProvinceServices.getProvinceById(districtDelivery.provinceId);
+                let status =
+                    item.status === 'success' ? 'Thành công' : item.status === 'fail' ? 'Thất bại' : 'Đang xử lý';
+                let shippingMethod = item.shippingMethod === 'fast' ? 'Vận chuyển nhanh' : 'Vận chuyển tiêu chuẩn';
+                dataTableReceive.value.push({
+                    _id: item._id,
+                    stt: index + 1,
+                    name: item.name,
+                    code: item.code,
+                    weight: `${item.weight}kg`,
+                    creator: creator.username,
+                    sender: sender.username,
+                    receiver: receiver.username,
+                    sendingAddress: `${districtSend.name} - ${provinceSend.name}`,
+                    deliveryAddress: `${districtDelivery.name} - ${provinceDelivery.name}`,
+                    shippingFee: `${item.shippingFee}đ`,
+                    shippingMethod: shippingMethod,
+                    status: status,
+                    transactionSendingAddress: item.transactionSendingAddress,
+                    currentPoint: item.currentPoint,
+                    nextPoint: item.nextPoint,
+                });
+            });
+        } else if (control.value === 'send') {
+            dataTableSend.value = [];
+            let res;
+            if (searchCode.value !== '') {
+                res = await CustomerServices.getPackageByCode(authStore.userInfo, searchCode.value, httpJwt);
+            }
+            if (res.total === 0) {
+                ElMessage({
+                    type: 'warning',
+                    message: 'Không tìm thấy !',
+                });
+            }
+            totalDataSend.value = res.total;
+            res.data.map(async (item: any, index: number) => {
+                const sender = await UserServices.getUserById(authStore.userInfo, item.senderId, httpJwt);
+                const receiver = await UserServices.getUserById(authStore.userInfo, item.receiverId, httpJwt);
+                const creator = await UserServices.getUserById(authStore.userInfo, item.creatorId, httpJwt);
+                const districtSend = await DistrictServices.getDistrictById(item.transactionSendingAddress);
+                const provinceSend = await ProvinceServices.getProvinceById(districtSend.provinceId);
+                const districtDelivery = await DistrictServices.getDistrictById(item.transactionDeliveryAddress);
+                const provinceDelivery = await ProvinceServices.getProvinceById(districtDelivery.provinceId);
+                let status =
+                    item.status === 'success' ? 'Thành công' : item.status === 'fail' ? 'Thất bại' : 'Đang xử lý';
+                let shippingMethod = item.shippingMethod === 'fast' ? 'Vận chuyển nhanh' : 'Vận chuyển tiêu chuẩn';
+                dataTableSend.value.push({
+                    _id: item._id,
+                    stt: index + 1,
+                    name: item.name,
+                    code: item.code,
+                    weight: `${item.weight}kg`,
+                    creator: creator.username,
+                    sender: sender.username,
+                    receiver: receiver.username,
+                    sendingAddress: `${districtSend.name} - ${provinceSend.name}`,
+                    deliveryAddress: `${districtDelivery.name} - ${provinceDelivery.name}`,
+                    shippingFee: `${item.shippingFee}đ`,
+                    shippingMethod: shippingMethod,
+                    status: status,
+                    transactionSendingAddress: item.transactionSendingAddress,
+                    currentPoint: item.currentPoint,
+                    nextPoint: item.nextPoint,
+                });
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    } finally {
+        searchLoading.value = false;
+        loadingTable.value = false;
+    }
+};
+
 onMounted(async () => {
     loadingFullScreen();
     const res = await PointServices.getGatheringPoint();
@@ -339,6 +509,20 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+}
+
+.search {
+    display: flex;
+    float: right;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    min-width: 180px;
+}
+
+.search-btn {
+    margin-left: 20px;
 }
 
 .m-2 {

@@ -21,6 +21,26 @@ export const ManagerServices = {
         ).data;
     },
 
+    searchGatheringStaffAccount: async (user: any, page: any, username: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(ManagerAPI.SEARCH_GATHERING_STAFF_ACCOUNT(page, username), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    searchTransactionStaffAccount: async (user: any, page: any, username: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(ManagerAPI.SEARCH_TRANSACTION_STAFF_ACCOUNT(page, username), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
     createStaffAccount: async (user: any, data: any, httpJwt: any) => {
         return (
             await httpJwt.post(ManagerAPI.CREATE_STAFF, data, {

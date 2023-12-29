@@ -8,6 +8,18 @@
     </div>
 
     <template v-if="control === 'shipping'">
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableShipping"
             v-loading="loadingTable"
@@ -70,7 +82,13 @@
                 :align="'center'"
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
-            <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
+            <el-table-column prop="status" label="Trạng thái" width="110" :align="'center'">
+                <template v-slot="scope" #default>
+                    <el-button link type="warning">
+                        {{ scope.row.status }}
+                    </el-button>
+                </template>
+            </el-table-column>
             <el-table-column fixed="right" label="Hành động" width="120" :align="'center'">
                 <template #default="scope">
                     <div>
@@ -111,6 +129,18 @@
     </template>
 
     <template v-if="control === 'success'">
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableSuccess"
             :border="true"
@@ -173,7 +203,13 @@
                 :align="'center'"
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
-            <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
+            <el-table-column prop="status" label="Trạng thái" width="110" :align="'center'">
+                <template v-slot="scope" #default>
+                    <el-button link type="success">
+                        {{ scope.row.status }}
+                    </el-button>
+                </template>
+            </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
@@ -187,6 +223,18 @@
     </template>
 
     <template v-if="control === 'fail'">
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableFail"
             :border="true"
@@ -249,7 +297,13 @@
                 :align="'center'"
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
-            <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
+            <el-table-column prop="status" label="Trạng thái" width="110" :align="'center'">
+                <template v-slot="scope" #default>
+                    <el-button link type="danger">
+                        {{ scope.row.status }}
+                    </el-button>
+                </template>
+            </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
@@ -281,6 +335,9 @@ const loadingSuccess = ref<boolean>(false);
 const loadingFail = ref<boolean>(false);
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
+
+const searchCode = ref<string>('');
+const searchLoading = ref<boolean>(false);
 
 // shipping
 const dataTableShipping = ref<any[]>([]);
@@ -418,7 +475,7 @@ const getPackageSuccess = async (page: any) => {
 const dataTableFail = ref<any[]>([]);
 const totalDataFail = ref<number>(0);
 const handleChangePageFail = async (val: number) => {
-    await getPackageFail(val)
+    await getPackageFail(val);
 };
 const getPackageFail = async (page: number) => {
     loadingTable.value = true;
@@ -464,6 +521,7 @@ const getPackageFail = async (page: number) => {
 };
 
 const handleChangeRadio = async () => {
+    searchCode.value = '';
     if (control.value === 'shipping') {
         await getPackageShipping(1);
     } else if (control.value === 'success') {
@@ -472,6 +530,8 @@ const handleChangeRadio = async () => {
         await getPackageFail(1);
     }
 };
+
+const handleSearch = () => {};
 
 onMounted(async () => {
     loadingFullScreen();
@@ -484,6 +544,20 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+}
+
+.search {
+    display: flex;
+    float: right;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    min-width: 180px;
+}
+
+.search-btn {
+    margin-left: 20px;
 }
 
 .pagination {

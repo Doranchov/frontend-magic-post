@@ -2,6 +2,12 @@
     <div class="title-page">
         <h1>Tài Khoản Nhân Viên Giao Dịch</h1>
     </div>
+    <div class="search">
+        <el-input class="search-input" placeholder="Tìm tên tài khoản ..." type="text" v-model="searchName" clearable />
+        <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch(1)"
+            >Tìm kiếm</el-button
+        >
+    </div>
     <el-table
         :data="tableData"
         v-loading="tableLoading"
@@ -126,6 +132,9 @@ const totalData = ref<number>(0);
 const deleteId = ref<string>('');
 const deleteLoading = ref<boolean>(false);
 
+const searchName = ref<string>('');
+const searchLoading = ref<boolean>(false);
+
 const createAccountRef = ref<InstanceType<typeof CreateAccountModal>>();
 const updateAccountRef = ref<InstanceType<typeof UpdateAccountModal>>();
 
@@ -149,6 +158,48 @@ const handleDelete = async () => {
         ElMessage.error('Xóa thất bại.');
     } finally {
         deleteLoading.value = false;
+    }
+};
+
+const handleSearch = async (page: any) => {
+    searchLoading.value = true;
+    tableLoading.value = true;
+    try {
+        tableData.value = [];
+        let res;
+        if (searchName.value === '') {
+            res = await ManagerServices.getTransactionStaff(authStore.userInfo, page, httpJwt);
+        } else {
+            res = await ManagerServices.searchTransactionStaffAccount(
+                authStore.userInfo,
+                page,
+                searchName.value,
+                httpJwt,
+            );
+        }
+        totalData.value = res.total;
+        res.data.map(async (account: any, index: number) => {
+            const district = await DistrictServices.getDistrictById(account.workPlace);
+            const province = await ProvinceServices.getProvinceById(district.provinceId);
+            tableData.value.push({
+                _id: account._id,
+                stt: index + 1,
+                username: account.username,
+                email: account.email,
+                role: checkRole(account.role),
+                phone: account.phone,
+                workPlace: `${district.name} - ${province.name}`,
+                district: district._id,
+                province: province._id,
+                createdAt: convertDateTime(account.createdAt),
+                roleId: account.role,
+            });
+        });
+    } catch (e) {
+        console.error(e);
+    } finally {
+        searchLoading.value = false;
+        tableLoading.value = false;
     }
 };
 
@@ -204,6 +255,20 @@ onMounted(async () => {
     left: 0;
     right: 0;
     margin: 0 auto;
+}
+
+.search {
+    display: flex;
+    float: right;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    min-width: 180px;
+}
+
+.search-btn {
+    margin-left: 20px;
 }
 
 .btn {

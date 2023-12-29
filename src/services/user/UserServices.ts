@@ -76,4 +76,24 @@ export const UserServices = {
             },
         });
     },
+
+    searchGatheringAccount: async (user: any, page: any, username: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(UserAPI.SEARCH_GATHERING_ACCOUNT(page, username), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
+
+    searchTransactionAccount: async (user: any, page: any, username: any, httpJwt: any) => {
+        return (
+            await httpJwt.get(UserAPI.SEARCH_TRANSACTION_ACCOUNT(page, username), {
+                headers: {
+                    token: `Bearer ${user.accessToken}`,
+                },
+            })
+        ).data;
+    },
 };

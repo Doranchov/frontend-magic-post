@@ -51,8 +51,7 @@
                                         <el-select
                                             placeholder="Chọn tỉnh/thành phố"
                                             v-model="province"
-                                            remote
-                                            :remote-method="loadProvinces"
+                                            filterable
                                             @change="handleChooseProvince"
                                         >
                                             <el-option
@@ -65,8 +64,7 @@
                                         <el-select
                                             placeholder="Chọn quận/huyện"
                                             v-model="userInfoForm.address"
-                                            remote
-                                            :remote-method="loadDistricts"
+                                            filterable
                                         >
                                             <el-option
                                                 v-for="(item, index) in districtOptions"

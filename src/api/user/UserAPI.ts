@@ -14,4 +14,9 @@ export const UserAPI = {
     LIST_GATHERING_MANAGER_ACCOUNT: (page: any) => `/user/admin/gathering-manager?page=${page}`,
 
     LIST_TRANSACTION_MANAGER_ACCOUNT: (page: any) => `/user/admin/transaction-manager?page=${page}`,
+
+    SEARCH_GATHERING_ACCOUNT: (page: any, name: any) =>
+        `/user/admin/search/gathering-manager?page=${page}&name=${name}`,
+    SEARCH_TRANSACTION_ACCOUNT: (page: any, name: any) =>
+        `/user/admin/search/transaction-manager?page=${page}&name=${name}`,
 };

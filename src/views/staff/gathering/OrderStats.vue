@@ -7,6 +7,18 @@
     </div>
 
     <template v-if="control === 'send'">
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableSend"
             :border="true"
@@ -69,7 +81,22 @@
                 :align="'center'"
             ></el-table-column>
             <el-table-column prop="shippingMethod" label="Phương thức vận chuyển" width="180"></el-table-column>
-            <el-table-column prop="status" label="Trạng thái" width="100"></el-table-column>
+            <el-table-column prop="status" label="Trạng thái" width="110" :align="'center'">
+                <template v-slot="scope" #default>
+                    <el-button
+                        link
+                        :type="
+                            scope.row.status === 'Thành công'
+                                ? 'success'
+                                : scope.row.status === 'Thất bại'
+                                ? 'danger'
+                                : 'warning'
+                        "
+                    >
+                        {{ scope.row.status }}
+                    </el-button>
+                </template>
+            </el-table-column>
             <el-table-column fixed="right" label="Hành động" width="100" :align="'center'">
                 <template #default="scope">
                     <div>
@@ -99,6 +126,18 @@
     </template>
 
     <template v-if="control === 'receive'">
+        <div class="search">
+            <el-input
+                class="search-input"
+                placeholder="Tìm bằng mã hàng hóa ..."
+                type="text"
+                v-model="searchCode"
+                clearable
+            />
+            <el-button type="primary" :loading="searchLoading" class="search-btn" @click="handleSearch"
+                >Tìm kiếm</el-button
+            >
+        </div>
         <el-table
             :data="dataTableReceive"
             :border="true"
@@ -207,6 +246,9 @@ const loadingConfirm = ref<boolean>(false);
 const loadingSend = ref<boolean>(false);
 const authStore = useAuthStore();
 const httpJwt = createAxiosJwt(authStore.userInfo);
+
+const searchCode = ref<string>('');
+const searchLoading = ref<boolean>(false);
 
 const totalDataSend = ref<number>(0);
 const dataTableSend = ref<any[]>([]);
@@ -349,12 +391,15 @@ const handleSendPackage = async (row: any) => {
 };
 
 const handleChangeRadio = async () => {
+    searchCode.value = '';
     if (control.value === 'send') {
         await getPackageToSend(1);
     } else if (control.value === 'receive') {
         await getReceivedPackage(1);
     }
 };
+
+const handleSearch = () => {};
 
 onMounted(async () => {
     loadingFullScreen();
@@ -367,6 +412,20 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     margin-bottom: 20px;
+}
+
+.search {
+    display: flex;
+    float: right;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    min-width: 180px;
+}
+
+.search-btn {
+    margin-left: 20px;
 }
 
 .pagination {

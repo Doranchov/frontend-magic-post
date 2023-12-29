@@ -18,13 +18,17 @@ router.beforeEach((to, from, next) => {
     if (to.matched.some((record) => record.meta.requiresAuth) && !login) {
         next({ path: '/login' });
     } else if (login) {
-        switch (to.name) {
-            case 'login' || 'register':
-                next({ path: '/' });
-                break;
-            default:
-                next();
-                break;
+        if (to.meta.role && !to.meta.role.includes(role)) {
+            next({ path: '/not-found' });
+        } else {
+            switch (to.name) {
+                case 'login' || 'register':
+                    next({ path: '/' });
+                    break;
+                default:
+                    next();
+                    break;
+            }
         }
     } else {
         next();
