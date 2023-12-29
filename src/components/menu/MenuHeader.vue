@@ -16,6 +16,10 @@
             <el-menu-item index="3-1" @click="handleRoute('/admin/gathering/goods')">Tại điểm tập kết</el-menu-item>
             <el-menu-item index="3-2" @click="handleRoute('/admin/transaction/goods')">Tại điểm giao dịch</el-menu-item>
         </el-sub-menu>
+<<<<<<< HEAD
+=======
+        <!-- <el-menu-item index="4" @click="handleRoute('/about')"> Về Chúng tôi </el-menu-item> -->
+>>>>>>> 0167edfd381efb2c1edc5e06e040c79ee10d0fb3
     </template>
 
     <template v-else-if="props.role === Role.CUSTOMER_ROLE" background-color="#fff">

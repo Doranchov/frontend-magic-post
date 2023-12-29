@@ -38,7 +38,7 @@
                     <div class="dev">
                         <el-image class="devpic" src="src/assets/dev.jpg"></el-image>
                         <h3>Giang Bảo Minh</h3>
-                        <p>Kẻ bú win vĩ đại</p>
+                        <p>I am Minh</p>
                     </div>
                 </el-col>
                 <el-col :span="8">
